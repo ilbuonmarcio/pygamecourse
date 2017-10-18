@@ -28,3 +28,8 @@ by doing environment** with high-level and easy to use tools and libraries like
 ### Lesson 05: MineSweeper
 - Adding **randomness** to our games
 - Changing **level of difficulty** through **settings.txt files**
+- More time to do your stuff today!
+
+## Affiliated links
+
+Join the official PyGame [Telegram Group](https://t.me/joinchat/Bz5eoxA0Eg_7tlOkW9qHZg) if you need some help after school!
