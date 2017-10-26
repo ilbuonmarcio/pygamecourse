@@ -1,4 +1,5 @@
 import pygame
+import random
 from pygame.locals import *
 
 pygame.init()
@@ -17,12 +18,12 @@ clock = pygame.time.Clock()
 player_sprite = pygame.image.load('./images/player_sprite.png')
 player_rect = player_sprite.get_rect()
 player_x = 20
-player_y = 20
+player_y = HEIGHT // 2 - player_rect.height // 2
 
 enemy_sprite = pygame.image.load('./images/enemy_sprite.png')
 enemy_rect = enemy_sprite.get_rect()
 enemy_x = WIDTH - 20 - enemy_rect.width
-enemy_y = 20
+enemy_y = HEIGHT // 2 - enemy_rect.height // 2
 
 bar_speed = player_y_speed = enemy_y_speed = 15
 
@@ -30,8 +31,8 @@ ball_sprite = pygame.image.load('./images/ball_sprite.png')
 ball_rect = ball_sprite.get_rect()
 ball_x = WIDTH // 2 - ball_rect.width // 2
 ball_y = HEIGHT // 2 - ball_rect.height // 2
-ball_x_speed = 6
-ball_y_speed = 6
+ball_x_speed = random.randint(4, 6)
+ball_y_speed = random.randint(4, 6)
 
 background_color = (200, 200, 200)
 
