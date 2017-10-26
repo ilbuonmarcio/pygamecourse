@@ -37,12 +37,8 @@ ball_sprite = pygame.image.load('./images/ball_sprite.png')
 ball_rect = ball_sprite.get_rect()
 ball_x = WIDTH // 2 - ball_rect.width // 2
 ball_y = HEIGHT // 2 - ball_rect.height // 2
-ball_x_speed = random.randint(-5, 5)
-ball_y_speed = random.randint(-2, 2)
-
-while ball_x_speed != 0 and ball_y_speed != 0:
-    ball_x_speed = random.randint(-5, 5)
-    ball_y_speed = random.randint(-2, 2)
+ball_x_speed = random.choice((-5, -4, -3, 3, 4, 5))
+ball_y_speed = random.choice((-5, -4, -3, 3, 4, 5))
 
 background_color = (200, 200, 200)
 
@@ -54,12 +50,8 @@ def reset_ball():
     global ball_x, ball_y, ball_x_speed, ball_y_speed
     ball_x = WIDTH // 2 - ball_rect.width // 2
     ball_y = HEIGHT // 2 - ball_rect.height // 2
-    ball_x_speed = random.randint(-5, 5)
-    ball_y_speed = random.randint(-2, 2)
-
-    while ball_x_speed != 0 and ball_y_speed != 0:
-        ball_x_speed = random.randint(-5, 5)
-        ball_y_speed = random.randint(-2, 2)
+    ball_x_speed = random.choice((-5, -4, -3, 3, 4, 5))
+    ball_y_speed = random.choice((-5, -4, -3, 3, 4, 5))
 
 # Game loop
 game_ended = False
