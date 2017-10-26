@@ -81,7 +81,7 @@ while not game_ended:
         enemy_y += bar_speed
 
     ##### Game logic
-    # Moving bar
+    # Move ball
     ball_x += ball_x_speed
     ball_y += ball_y_speed
 
