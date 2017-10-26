@@ -12,6 +12,8 @@ window = pygame.display.set_mode(GAME_RES, HWACCEL|HWSURFACE|DOUBLEBUF)
 pygame.display.set_caption(GAME_TITLE)
 pygame.key.set_repeat(10,10)
 clock = pygame.time.Clock()
+gamefont = pygame.font.SysFont("monospace", 30)
+font_color = (0, 0, 0)
 
 # Game Values
 
@@ -20,12 +22,14 @@ player_rect = player_sprite.get_rect()
 player_x = 20
 player_y = HEIGHT // 2 - player_rect.height // 2
 player_score = 0
+player_score_coords = (50, 20)
 
 enemy_sprite = pygame.image.load('./images/enemy_sprite.png')
 enemy_rect = enemy_sprite.get_rect()
 enemy_x = WIDTH - 20 - enemy_rect.width
 enemy_y = HEIGHT // 2 - enemy_rect.height // 2
 enemy_score = 0
+enemy_score_coords = (WIDTH - 60, 20)
 
 bar_speed = player_y_speed = enemy_y_speed = 15
 
@@ -34,7 +38,11 @@ ball_rect = ball_sprite.get_rect()
 ball_x = WIDTH // 2 - ball_rect.width // 2
 ball_y = HEIGHT // 2 - ball_rect.height // 2
 ball_x_speed = random.randint(-5, 5)
-ball_y_speed = random.randint(-3, 3)
+ball_y_speed = random.randint(-2, 2)
+
+while ball_x_speed != 0 and ball_y_speed != 0:
+    ball_x_speed = random.randint(-5, 5)
+    ball_y_speed = random.randint(-2, 2)
 
 background_color = (200, 200, 200)
 
@@ -47,7 +55,11 @@ def reset_ball():
     ball_x = WIDTH // 2 - ball_rect.width // 2
     ball_y = HEIGHT // 2 - ball_rect.height // 2
     ball_x_speed = random.randint(-5, 5)
-    ball_y_speed = random.randint(-3, 3)
+    ball_y_speed = random.randint(-2, 2)
+
+    while ball_x_speed != 0 and ball_y_speed != 0:
+        ball_x_speed = random.randint(-5, 5)
+        ball_y_speed = random.randint(-2, 2)
 
 # Game loop
 game_ended = False
@@ -125,11 +137,22 @@ while not game_ended:
     if enemy_y < 20:
         enemy_y = 20
 
-    ##### Display Drawing
+    ##### Display Rendering
+    # Score buffer rendering
+    player_score_buffer = gamefont.render(str(player_score), 1, font_color)
+    enemy_score_buffer = gamefont.render(str(enemy_score), 1, font_color)
+
+    # Window reset
     pygame.Surface.fill(window, background_color)
+
+    # Game elements drawing
     pygame.Surface.blit(window, player_sprite, (player_x, player_y))
     pygame.Surface.blit(window, enemy_sprite, (enemy_x, enemy_y))
     pygame.Surface.blit(window, ball_sprite, (ball_x, ball_y))
+
+    # UI/UX drawing
+    pygame.Surface.blit(window, player_score_buffer, player_score_coords)
+    pygame.Surface.blit(window, enemy_score_buffer, enemy_score_coords)
 
     ##### Display Update
     pygame.display.update()
