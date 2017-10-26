@@ -19,11 +19,13 @@ player_sprite = pygame.image.load('./images/player_sprite.png')
 player_rect = player_sprite.get_rect()
 player_x = 20
 player_y = HEIGHT // 2 - player_rect.height // 2
+player_score = 0
 
 enemy_sprite = pygame.image.load('./images/enemy_sprite.png')
 enemy_rect = enemy_sprite.get_rect()
 enemy_x = WIDTH - 20 - enemy_rect.width
 enemy_y = HEIGHT // 2 - enemy_rect.height // 2
+enemy_score = 0
 
 bar_speed = player_y_speed = enemy_y_speed = 15
 
@@ -31,12 +33,21 @@ ball_sprite = pygame.image.load('./images/ball_sprite.png')
 ball_rect = ball_sprite.get_rect()
 ball_x = WIDTH // 2 - ball_rect.width // 2
 ball_y = HEIGHT // 2 - ball_rect.height // 2
-ball_x_speed = random.randint(4, 6)
-ball_y_speed = random.randint(4, 6)
+ball_x_speed = random.randint(-5, 5)
+ball_y_speed = random.randint(-3, 3)
 
 background_color = (200, 200, 200)
 
 # End of Game Values
+
+# Game Functions
+
+def reset_ball():
+    global ball_x, ball_y, ball_x_speed, ball_y_speed
+    ball_x = WIDTH // 2 - ball_rect.width // 2
+    ball_y = HEIGHT // 2 - ball_rect.height // 2
+    ball_x_speed = random.randint(-5, 5)
+    ball_y_speed = random.randint(-3, 3)
 
 # Game loop
 game_ended = False
@@ -70,9 +81,36 @@ while not game_ended:
         enemy_y += bar_speed
 
     ##### Game logic
-    # Keeping ball into screen
-    if ball_x + ball_rect.width >= WIDTH or ball_x <= 0:
+    # Moving bar
+    ball_x += ball_x_speed
+    ball_y += ball_y_speed
+
+    # Bouce into bars if collision is made
+    if  ball_x >= player_x and \
+        ball_x < player_x + player_rect.width and \
+        ball_y + ball_rect.height >= player_y and \
+        ball_y < player_y + player_rect.height:
+
         ball_x_speed *= -1
+        ball_x = player_x + player_rect.width + 1
+
+    if  ball_x + ball_rect.width >= enemy_x and \
+        ball_x + ball_rect.height < enemy_x + enemy_rect.width and \
+        ball_y + ball_rect.height >= enemy_y and \
+        ball_y < enemy_y + enemy_rect.height:
+
+        ball_x_speed *= -1
+        ball_x = enemy_x - ball_rect.width - 1
+
+    # Keeping ball into screen
+    if ball_x + ball_rect.width >= WIDTH:
+        player_score += 1
+        reset_ball()
+
+    if ball_x <= 0:
+        enemy_score += 1
+        reset_ball()
+
     if ball_y + ball_rect.height >= HEIGHT or ball_y <= 0:
         ball_y_speed *= -1
 
@@ -86,11 +124,6 @@ while not game_ended:
         enemy_y = HEIGHT - enemy_rect.height - 20
     if enemy_y < 20:
         enemy_y = 20
-
-    # Moving bar
-    ball_x += ball_x_speed
-    ball_y += ball_y_speed
-
 
     ##### Display Drawing
     pygame.Surface.fill(window, background_color)
