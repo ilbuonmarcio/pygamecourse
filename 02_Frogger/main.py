@@ -33,7 +33,7 @@ player_sprite = pygame.image.load('./images/player_sprite.png')
 player_win_sprite = pygame.image.load('./images/player_win_sprite.png')
 player_lose_sprite = pygame.image.load('./images/player_lose_sprite.png')
 player_rect = player_sprite.get_rect()
-player_x = WIDTH // 2 - player_rect.width // 2
+player_x = 400
 player_y = 500
 
 enemy_sprite = pygame.image.load('./images/enemy_sprite.png')
@@ -80,6 +80,12 @@ while not game_ended:
                 player_x += 100
 
     ##### Game logic
+    # Keeping player into screen
+    if player_x < 0:
+        player_x = 0
+    if player_x + player_rect.width >= WIDTH:
+        player_x = WIDTH - player_rect.width
+
     # Moving enemies
     for row in list_of_enemies:
         for enemy in row:
