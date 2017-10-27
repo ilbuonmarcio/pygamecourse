@@ -131,11 +131,6 @@ while not game_ended:
         for x in range(0, WIDTH, 75):
             pygame.draw.rect(window, (255, 255, 255), (x, y, 30, 2))
 
-    # Enemy Drawing
-    for row in list_of_enemies:
-        for enemy in row:
-            pygame.Surface.blit(window, enemy_sprite, (enemy.x, enemy.y))
-
     # Frog Drawing
     if win == None:
         pygame.Surface.blit(window, player_sprite, (player_x, player_y))
@@ -143,6 +138,11 @@ while not game_ended:
         pygame.Surface.blit(window, player_win_sprite, (player_x, player_y))
     if win == False:
         pygame.Surface.blit(window, player_lose_sprite, (player_x, player_y))
+
+    # Enemy Drawing
+    for row in list_of_enemies:
+        for enemy in row:
+            pygame.Surface.blit(window, enemy_sprite, (enemy.x, enemy.y))
 
     # Win/Lose Label Drawing
     if win == True:
