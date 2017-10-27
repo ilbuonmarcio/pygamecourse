@@ -16,6 +16,12 @@ font_color = (255, 255, 255)
 
 # Game Values
 
+difficulty = 2
+win = None
+
+background_color = (100, 210, 60) # RGB value
+street_color = (15, 15, 15)
+
 win_label = gamefont.render("You Win!", 1, font_color)
 win_rect = win_label.get_rect()
 win_label_x = WIDTH // 2 - win_rect.width // 2
@@ -26,9 +32,6 @@ lose_rect = lose_label.get_rect()
 lose_label_x = WIDTH // 2 - lose_rect.width // 2
 lose_label_y = HEIGHT // 2 - lose_rect.height // 2
 
-background_color = (100, 210, 60) # RGB value
-street_color = (15, 15, 15)
-
 player_sprite = pygame.image.load('./images/player_sprite.png')
 player_win_sprite = pygame.image.load('./images/player_win_sprite.png')
 player_lose_sprite = pygame.image.load('./images/player_lose_sprite.png')
@@ -38,8 +41,6 @@ player_y = 500
 
 enemy_sprite = pygame.image.load('./images/enemy_sprite.png')
 enemy_rect = enemy_sprite.get_rect()
-
-difficulty = 2
 
 class Enemy:
 
@@ -53,9 +54,6 @@ class Enemy:
         self.y = y
 
 list_of_enemies = [[Enemy(y) for _ in range(0, difficulty)] for y in [100, 200, 300, 400]]
-win = None
-
-# print(list_of_enemies)
 
 # End of Game Values
 
