@@ -11,21 +11,35 @@ GAME_TITLE = 'Frogger - MarconiGames'
 window = pygame.display.set_mode(GAME_RES, HWACCEL|HWSURFACE|DOUBLEBUF)
 pygame.display.set_caption(GAME_TITLE)
 clock = pygame.time.Clock()
+gamefont = pygame.font.SysFont("monospace", 200)
+font_color = (255, 255, 255)
 
 # Game Values
 
-difficulty = 2
+win_label = gamefont.render("You Win!", 1, font_color)
+win_rect = win_label.get_rect()
+win_label_x = WIDTH // 2 - win_rect.width // 2
+win_label_y = HEIGHT // 2 - win_rect.height // 2
+
+lose_label = gamefont.render("You Lose!", 1, font_color)
+lose_rect = lose_label.get_rect()
+lose_label_x = WIDTH // 2 - lose_rect.width // 2
+lose_label_y = HEIGHT // 2 - lose_rect.height // 2
 
 background_color = (100, 210, 60) # RGB value
 street_color = (15, 15, 15)
 
 player_sprite = pygame.image.load('./images/player_sprite.png')
+player_win_sprite = pygame.image.load('./images/player_win_sprite.png')
+player_lose_sprite = pygame.image.load('./images/player_lose_sprite.png')
 player_rect = player_sprite.get_rect()
 player_x = WIDTH // 2 - player_rect.width // 2
 player_y = 500
 
 enemy_sprite = pygame.image.load('./images/enemy_sprite.png')
 enemy_rect = enemy_sprite.get_rect()
+
+difficulty = 2
 
 class Enemy:
 
@@ -39,6 +53,7 @@ class Enemy:
         self.y = y
 
 list_of_enemies = [[Enemy(y) for _ in range(0, difficulty)] for y in [100, 200, 300, 400]]
+win = None
 
 # print(list_of_enemies)
 
@@ -57,16 +72,14 @@ while not game_ended:
             if event.key == K_ESCAPE:
                 game_ended  = True
                 break
-            if event.key == K_UP:
+            if event.key == K_UP and win == None:
                 player_y -= 100
-            if event.key == K_LEFT:
+            if event.key == K_LEFT and win == None:
                 player_x -= 100
-            if event.key == K_RIGHT:
+            if event.key == K_RIGHT and win == None:
                 player_x += 100
 
     ##### Game logic
-    print(player_y)
-
     # Moving enemies
     for row in list_of_enemies:
         for enemy in row:
@@ -80,7 +93,28 @@ while not game_ended:
             elif enemy.x > WIDTH:
                 enemy.x = -enemy_rect.width
 
+    # Check if player won the game
+    if player_y == 0 and win == None:
+        win = True
+
     # Control if player hits enemies
+    for row in list_of_enemies:
+        for enemy in row:
+            if enemy.x_speed < 0:
+                if  enemy.x > player_x and \
+                    enemy.x < player_x + player_rect.width and \
+                    enemy.y + enemy_rect.height > player_y and \
+                    enemy.y < player_y + player_rect.height and \
+                    win == None:
+                    win = False
+            if enemy.x_speed > 0:
+                if  enemy.x + enemy_rect.width > player_x and \
+                    enemy.x + enemy_rect.height < player_x + player_rect.width and \
+                    enemy.y + enemy_rect.height > player_y and \
+                    enemy.y < player_y + player_rect.height and \
+                    win == None:
+                    win = False
+
 
     ##### Display rendering
     pygame.Surface.fill(window, background_color)
@@ -97,7 +131,19 @@ while not game_ended:
             pygame.Surface.blit(window, enemy_sprite, (enemy.x, enemy.y))
 
     # Frog Drawing
-    pygame.Surface.blit(window, player_sprite, (player_x, player_y))
+    if win == None:
+        pygame.Surface.blit(window, player_sprite, (player_x, player_y))
+    if win == True:
+        pygame.Surface.blit(window, player_win_sprite, (player_x, player_y))
+    if win == False:
+        pygame.Surface.blit(window, player_lose_sprite, (player_x, player_y))
+
+    # Win/Lose Label Drawing
+    if win == True:
+        pygame.Surface.blit(window, win_label, (win_label_x, win_label_y))
+    if win == False:
+        pygame.Surface.blit(window, lose_label, (lose_label_x, lose_label_y))
+
 
     ##### Display Update
     pygame.display.update()
