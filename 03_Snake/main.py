@@ -57,7 +57,6 @@ class Snake:
             self.add_block()
 
         if self.check_if_eating():
-            print('eaten!')
             drop_new_apple()
             self.add_block()
 
