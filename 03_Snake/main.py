@@ -5,7 +5,7 @@ import random
 pygame.init()
 
 GAME_RES = WIDTH, HEIGHT = 800, 600
-FPS = 60
+FPS = 10
 GAME_TITLE = 'Snake - MarconiGames'
 
 window = pygame.display.set_mode(GAME_RES, HWACCEL|HWSURFACE|DOUBLEBUF)
@@ -19,50 +19,42 @@ background_color = (150, 150, 150) # RGB value
 class Snake:
 
     def __init__(self):
-        self.sprite = pygame.image.load('./images/snake_block.png')
-        self.rect = self.sprite.get_rect()
+        self.block_sprite = pygame.image.load('./images/snake_block.png')
+        self.head_sprite = pygame.image.load('./images/snake_head.png')
+        self.rect = self.block_sprite.get_rect()
         self.curr_x = WIDTH // 2 - self.rect.width // 2
         self.curr_y = HEIGHT // 2 - self.rect.height // 2
+        self.last_x = None
+        self.last_y = None
         self.tail = []
         self.direction = 'right'
-        self.speed = 1 / self.rect.width * 6
-        self.unit = self.rect.width
+        self.speed = 0.6
 
     def move(self):
+        self.last_x, self.last_y = self.curr_x, self.curr_y
+
         if self.direction == 'up':
-            self.curr_y -= self.unit * self.speed
+            self.curr_y -= self.rect.height * self.speed
         if self.direction == 'down':
-            self.curr_y += self.unit * self.speed
+            self.curr_y += self.rect.height * self.speed
         if self.direction == 'left':
-            self.curr_x -= self.unit * self.speed
+            self.curr_x -= self.rect.width * self.speed
         if self.direction == 'right':
-            self.curr_x += self.unit * self.speed
+            self.curr_x += self.rect.width * self.speed
 
         if self.curr_x > WIDTH:
-            self.curr_x = -1 * self.unit
-        if self.curr_x + self.unit < 0:
+            self.curr_x = -1 * self.rect.width
+        if self.curr_x + self.rect.width < 0:
             self.curr_x = WIDTH
         if self.curr_y > HEIGHT:
-            self.curr_y = -1 * self.unit
-        if self.curr_y + self.unit < 0:
+            self.curr_y = -1 * self.rect.height
+        if self.curr_y + self.rect.height < 0:
             self.curr_y = HEIGHT
 
-        for block in self.tail:
-            if block[0] > WIDTH:
-                block[0] = -1 * self.unit
-            if block[0] + self.unit < 0:
-                block[0] = WIDTH
-            if block[1] > HEIGHT:
-                block[1] = -1 * self.unit
-            if block[1] + self.unit < 0:
-                block[1] = HEIGHT
 
-
-        try:
+        if len(self.tail) > 0:
             del self.tail[len(self.tail)-1]
             self.add_block()
-        except:
-            pass
 
         if self.check_if_eating():
             print('eaten!')
@@ -70,28 +62,19 @@ class Snake:
             self.add_block()
 
     def draw(self):
-        pygame.Surface.blit(window, self.sprite, (self.curr_x, self.curr_y))
-        for block in self.tail:
-            pygame.Surface.blit(window, self.sprite, (block[0], block[1]))
+        for block in self.tail[::-1]:
+            pygame.Surface.blit(window, self.block_sprite, (block[0], block[1]))
+        pygame.Surface.blit(window, self.head_sprite, (self.curr_x, self.curr_y))
 
     def add_block(self):
-        x, y = self.curr_x, self.curr_y
-        if self.direction == 'up':
-            y += self.rect.height
-        if self.direction == 'down':
-            y -= self.rect.height
-        if self.direction == 'left':
-            x += self.rect.height
-        if self.direction == 'right':
-            x -= self.rect.height
-        self.tail.insert(0, [x + self.unit, y + self.unit])
+        x, y = self.last_x, self.last_y
+        self.tail.insert(0, [x, y])
 
     def check_if_eating(self):
-        global apple_x, apple_y, apple_rect
-        if self.curr_x + self.unit > apple_x and \
-           self.curr_x + self.unit < apple_x + apple_rect.width and \
-           self.curr_y + self.unit > apple_y and \
-           self.curr_y + self.unit < apple_y + apple_rect.height:
+        if self.curr_x + self.rect.width >= apple_x and \
+           self.curr_x + self.rect.width <= apple_x + apple_rect.width and\
+           self.curr_y + self.rect.height >= apple_y and \
+           self.curr_y + self.rect.height <= apple_y + apple_rect.height:
             return True
         else:
             return False
