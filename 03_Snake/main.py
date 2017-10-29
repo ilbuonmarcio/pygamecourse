@@ -71,9 +71,9 @@ class Snake:
 
     def check_if_eating(self):
         if self.curr_x + self.rect.width >= apple_x and \
-           self.curr_x + self.rect.width <= apple_x + apple_rect.width and\
+           self.curr_x <= apple_x + apple_rect.width and \
            self.curr_y + self.rect.height >= apple_y and \
-           self.curr_y + self.rect.height <= apple_y + apple_rect.height:
+           self.curr_y <= apple_y + apple_rect.height:
             return True
         else:
             return False
@@ -119,6 +119,9 @@ while not game_ended:
 
     ##### Display Rendering
     pygame.Surface.fill(window, background_color)
+    for x in range(0, WIDTH, apple_rect.width):
+        for y in range(0, HEIGHT, apple_rect.height):
+            pygame.draw.rect(window, (x*y % 255, x*y % 255, x*y % 255), (x, y, apple_rect.width, apple_rect.height)) 
     pygame.Surface.blit(window, apple_sprite, (apple_x, apple_y))
     snake.draw()
 
