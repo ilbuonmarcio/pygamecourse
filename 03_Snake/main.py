@@ -22,7 +22,7 @@ class Snake:
         self.block_sprite = pygame.image.load('./images/snake_block.png')
         self.head_sprite = pygame.image.load('./images/snake_head.png')
         self.rect = self.block_sprite.get_rect()
-        self.curr_x = WIDTH // 2 - self.rect.width // 2
+        self.curr_x = self.rect.width * 3
         self.curr_y = HEIGHT // 2 - self.rect.height // 2
         self.last_x = None
         self.last_y = None
@@ -87,8 +87,8 @@ apple_y = random.randint(0, HEIGHT - apple_rect.height)
 
 def drop_new_apple():
     global apple_x, apple_y
-    apple_x = random.randint(0, WIDTH - apple_rect.width)
-    apple_y = random.randint(0, HEIGHT - apple_rect.height)
+    apple_x = WIDTH // apple_rect.width * random.randint(0, apple_rect.width)
+    apple_y = HEIGHT // apple_rect.height * random.randint(0, apple_rect.height)
 
 # End of Game Values
 
@@ -119,9 +119,6 @@ while not game_ended:
 
     ##### Display Rendering
     pygame.Surface.fill(window, background_color)
-    for x in range(0, WIDTH, apple_rect.width):
-        for y in range(0, HEIGHT, apple_rect.height):
-            pygame.draw.rect(window, (x*y % 255, x*y % 255, x*y % 255), (x, y, apple_rect.width, apple_rect.height)) 
     pygame.Surface.blit(window, apple_sprite, (apple_x, apple_y))
     snake.draw()
 
