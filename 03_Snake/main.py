@@ -4,7 +4,7 @@ import random
 
 pygame.init()
 
-GAME_RES = WIDTH, HEIGHT = 800, 600
+GAME_RES = WIDTH, HEIGHT = 768, 576
 FPS = 10
 GAME_TITLE = 'Snake - MarconiGames'
 
@@ -29,8 +29,8 @@ class Snake:
 
         # Current coords and previous coordinates variables
         # initialized to these values
-        self.curr_x = self.rect.width * 3
-        self.curr_y = HEIGHT // 2 - self.rect.height // 2
+        self.curr_x = WIDTH / 2
+        self.curr_y = HEIGHT / 2
         self.last_x = None
         self.last_y = None
 
@@ -38,7 +38,7 @@ class Snake:
         self.tail = []
 
         self.direction = 'right'
-        self.speed = 0.6
+        self.speed = 0.5
 
     def move(self):
         # Called every frame, it's responsible for snake's movement
@@ -55,13 +55,13 @@ class Snake:
             self.curr_x += self.rect.width * self.speed
 
         # Handle going on walls
-        if self.curr_x > WIDTH:
-            self.curr_x = -1 * self.rect.width
-        if self.curr_x + self.rect.width < 0:
+        if self.curr_x > (WIDTH - 31):
+            self.curr_x = 0
+        if self.curr_x < 0:
             self.curr_x = WIDTH
-        if self.curr_y > HEIGHT:
-            self.curr_y = -1 * self.rect.height
-        if self.curr_y + self.rect.height < 0:
+        if self.curr_y > (HEIGHT - 31):
+            self.curr_y = 0
+        if self.curr_y < 0:
             self.curr_y = HEIGHT
 
         # Drop the last block of tail and create a new one
@@ -90,10 +90,8 @@ class Snake:
 
     def check_if_eating(self):
         # Function for checking if he is on top of the apple or not
-        if self.curr_x + self.rect.width >= apple_x and \
-           self.curr_x <= apple_x + apple_rect.width and \
-           self.curr_y + self.rect.height >= apple_y and \
-           self.curr_y <= apple_y + apple_rect.height:
+        if self.curr_x > (apple_x - 33) and self.curr_x < (apple_x + 64)\
+        and self.curr_y > (apple_y - 33) and self.curr_y < (apple_y + 64):
             return True
         else:
             return False
@@ -103,14 +101,14 @@ snake = Snake()
 # Apple sprite and initial properties
 apple_sprite = pygame.image.load('./images/apple.png')
 apple_rect = apple_sprite.get_rect()
-apple_x = random.randint(0, WIDTH - apple_rect.width)
-apple_y = random.randint(0, HEIGHT - apple_rect.height)
+apple_x = random.randint(0, 22) * 32
+apple_y = random.randint(0, 16) * 32
 
 def drop_new_apple():
     # Function for dropping a new one if the existing one is just eaten
     global apple_x, apple_y
-    apple_x = WIDTH // apple_rect.width * random.randint(0, apple_rect.width)
-    apple_y = HEIGHT // apple_rect.height * random.randint(0, apple_rect.height)
+    apple_x = random.randint(0, 22) * 32
+    apple_y = random.randint(0, 16) * 32
 
 # End of Game Values
 
