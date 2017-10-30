@@ -11,10 +11,20 @@ GAME_TITLE = 'Snake - MarconiGames'
 window = pygame.display.set_mode(GAME_RES, HWACCEL|HWSURFACE|DOUBLEBUF)
 pygame.display.set_caption(GAME_TITLE)
 clock = pygame.time.Clock()
+gamefont = pygame.font.SysFont("monospace", 200)
+font_color = (255, 255, 255)
 
 # Game Values
 
 background_color = (150, 150, 150) # RGB value
+
+#Settin up the Game over screen
+lose_label = gamefont.render("You Lose!", 1, font_color)
+lose_rect = lose_label.get_rect()
+lose_label_x = WIDTH // 2 - lose_rect.width // 2
+lose_label_y = HEIGHT // 2 - lose_rect.height // 2
+
+lose = False
 
 # Class for representing the snake
 class Snake:
@@ -97,7 +107,7 @@ class Snake:
             return False
 
     def check_if_dead(self):
-        # Function for checking if snake ate himself
+        # Function for checking if snake aet himself
         for i in range(len(self.tail)):
             if self.curr_x == self.tail[i][0] and self.curr_y == self.tail[i][1]:
                 return True
@@ -145,8 +155,11 @@ while not game_ended:
     ##### Game Logic
     snake.move()
 
+    ##### Snake Dead
     if snake.check_if_dead():
+        lose = True
         game_ended = True
+
 
     ##### Display Rendering
     # Drawing the background-color
@@ -161,6 +174,20 @@ while not game_ended:
     ##### Display Update
     pygame.display.update()
     clock.tick(FPS)
+
+#Show a 'Game Over' screen
+if lose:
+    lose_screen = True
+    while lose_screen:
+        pygame.Surface.fill(window, background_color)
+        pygame.Surface.blit(window, lose_label, (lose_label_x, lose_label_y))
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                lose_screen = False
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    lose_screen = False
 
 pygame.quit()
 exit(0)
