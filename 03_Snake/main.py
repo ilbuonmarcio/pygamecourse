@@ -96,6 +96,12 @@ class Snake:
         else:
             return False
 
+    def check_if_dead(self):
+        # Function for checking if snake ate himself
+        for i in range(len(self.tail)):
+            if self.curr_x == self.tail[i][0] and self.curr_y == self.tail[i][1]:
+                return True
+
 snake = Snake()
 
 # Apple sprite and initial properties
@@ -138,6 +144,9 @@ while not game_ended:
 
     ##### Game Logic
     snake.move()
+
+    if snake.check_if_dead():
+        game_ended = True
 
     ##### Display Rendering
     # Drawing the background-color
