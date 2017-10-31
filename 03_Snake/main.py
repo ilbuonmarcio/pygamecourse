@@ -4,17 +4,27 @@ import random
 
 pygame.init()
 
-GAME_RES = WIDTH, HEIGHT = 800, 600
+GAME_RES = WIDTH, HEIGHT = 768, 576
 FPS = 10
 GAME_TITLE = 'Snake - MarconiGames'
 
 window = pygame.display.set_mode(GAME_RES, HWACCEL|HWSURFACE|DOUBLEBUF)
 pygame.display.set_caption(GAME_TITLE)
 clock = pygame.time.Clock()
+gamefont = pygame.font.SysFont("monospace", 200)
+font_color = (255, 255, 255)
 
 # Game Values
 
 background_color = (150, 150, 150) # RGB value
+
+#Settin up the Game over screen
+lose_label = gamefont.render("You Lose!", 1, font_color)
+lose_rect = lose_label.get_rect()
+lose_label_x = WIDTH // 2 - lose_rect.width // 2
+lose_label_y = HEIGHT // 2 - lose_rect.height // 2
+
+lose = False
 
 # Class for representing the snake
 class Snake:
@@ -29,8 +39,8 @@ class Snake:
 
         # Current coords and previous coordinates variables
         # initialized to these values
-        self.curr_x = self.rect.width * 3
-        self.curr_y = HEIGHT // 2 - self.rect.height // 2
+        self.curr_x = WIDTH / 2
+        self.curr_y = HEIGHT / 2
         self.last_x = None
         self.last_y = None
 
@@ -38,7 +48,7 @@ class Snake:
         self.tail = []
 
         self.direction = 'right'
-        self.speed = 0.6
+        self.speed = 0.5
 
     def move(self):
         # Called every frame, it's responsible for snake's movement
@@ -55,13 +65,13 @@ class Snake:
             self.curr_x += self.rect.width * self.speed
 
         # Handle going on walls
-        if self.curr_x > WIDTH:
-            self.curr_x = -1 * self.rect.width
-        if self.curr_x + self.rect.width < 0:
+        if self.curr_x > (WIDTH - 31):
+            self.curr_x = 0
+        if self.curr_x < 0:
             self.curr_x = WIDTH
-        if self.curr_y > HEIGHT:
-            self.curr_y = -1 * self.rect.height
-        if self.curr_y + self.rect.height < 0:
+        if self.curr_y > (HEIGHT - 31):
+            self.curr_y = 0
+        if self.curr_y < 0:
             self.curr_y = HEIGHT
 
         # Drop the last block of tail and create a new one
@@ -90,27 +100,31 @@ class Snake:
 
     def check_if_eating(self):
         # Function for checking if he is on top of the apple or not
-        if self.curr_x + self.rect.width >= apple_x and \
-           self.curr_x <= apple_x + apple_rect.width and \
-           self.curr_y + self.rect.height >= apple_y and \
-           self.curr_y <= apple_y + apple_rect.height:
+        if self.curr_x > (apple_x - 33) and self.curr_x < (apple_x + 64)\
+        and self.curr_y > (apple_y - 33) and self.curr_y < (apple_y + 64):
             return True
         else:
             return False
+
+    def check_if_dead(self):
+        # Function for checking if snake aet himself
+        for i in range(len(self.tail)):
+            if self.curr_x == self.tail[i][0] and self.curr_y == self.tail[i][1]:
+                return True
 
 snake = Snake()
 
 # Apple sprite and initial properties
 apple_sprite = pygame.image.load('./images/apple.png')
 apple_rect = apple_sprite.get_rect()
-apple_x = random.randint(0, WIDTH - apple_rect.width)
-apple_y = random.randint(0, HEIGHT - apple_rect.height)
+apple_x = random.randint(0, 22) * 32
+apple_y = random.randint(0, 16) * 32
 
 def drop_new_apple():
     # Function for dropping a new one if the existing one is just eaten
     global apple_x, apple_y
-    apple_x = WIDTH // apple_rect.width * random.randint(0, apple_rect.width)
-    apple_y = HEIGHT // apple_rect.height * random.randint(0, apple_rect.height)
+    apple_x = random.randint(0, 22) * 32
+    apple_y = random.randint(0, 16) * 32
 
 # End of Game Values
 
@@ -141,6 +155,12 @@ while not game_ended:
     ##### Game Logic
     snake.move()
 
+    ##### Snake Dead
+    if snake.check_if_dead():
+        lose = True
+        game_ended = True
+
+
     ##### Display Rendering
     # Drawing the background-color
     pygame.Surface.fill(window, background_color)
@@ -154,6 +174,20 @@ while not game_ended:
     ##### Display Update
     pygame.display.update()
     clock.tick(FPS)
+
+#Show a 'Game Over' screen
+if lose:
+    lose_screen = True
+    while lose_screen:
+        pygame.Surface.fill(window, background_color)
+        pygame.Surface.blit(window, lose_label, (lose_label_x, lose_label_y))
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                lose_screen = False
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    lose_screen = False
 
 pygame.quit()
 exit(0)
