@@ -1,5 +1,5 @@
 # MarconiGames
-Repository for PyGame's Upcoming PyGame Course!
+Repository for PyGame's Upcoming Course!
 
 ### Course's Main Objective
 This course is centered in *teaching how to develop amateur games* in a *learning
