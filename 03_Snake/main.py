@@ -100,8 +100,10 @@ class Snake:
 
     def check_if_eating(self):
         # Function for checking if he is on top of the apple or not
-        if self.curr_x >= (apple_x - self.rect.width / 2) and self.curr_x <= (apple_x + self.rect.width / 2)\
-        and self.curr_y >= (apple_y - self.rect.height / 2) and self.curr_y <= (apple_y + self.rect.height / 2):
+        if self.curr_x >= (apple_x - self.rect.width / 2) \
+           and self.curr_x <= (apple_x + self.rect.width / 2) \
+           and self.curr_y >= (apple_y - self.rect.height / 2) \
+           and self.curr_y <= (apple_y + self.rect.height / 2):
             return True
         else:
             return False
@@ -109,7 +111,8 @@ class Snake:
     def check_if_dead(self):
         # Function for checking if snake aet himself
         for i in range(len(self.tail)):
-            if self.curr_x == self.tail[i][0] and self.curr_y == self.tail[i][1]:
+            if self.curr_x == self.tail[i][0] \
+               and self.curr_y == self.tail[i][1]:
                 return True
 
 snake = Snake()
@@ -117,14 +120,17 @@ snake = Snake()
 # Apple sprite and initial properties
 apple_sprite = pygame.image.load('./images/apple.png')
 apple_rect = apple_sprite.get_rect()
-apple_x = random.randint(0, ((WIDTH - apple_rect.width) / (apple_rect.width / 2))) * (apple_rect.width / 2)
-apple_y = random.randint(0, ((HEIGHT - apple_rect.height) / (apple_rect.height / 2))) * (apple_rect.height / 2)
+apple_x_limit = ((WIDTH - apple_rect.width) / (apple_rect.width / 2))
+apple_y_limit = ((HEIGHT - apple_rect.height) / (apple_rect.height / 2))
+
+apple_x = random.randint(0, apple_x_limit) * (apple_rect.width / 2)
+apple_y = random.randint(0, apple_y_limit) * (apple_rect.height / 2)
 
 def drop_new_apple():
     # Function for dropping a new one if the existing one is just eaten
     global apple_x, apple_y
-    apple_x = random.randint(0, ((WIDTH - apple_rect.width) / (apple_rect.width / 2))) * (apple_rect.width / 2)
-    apple_y = random.randint(0, ((HEIGHT - apple_rect.height) / (apple_rect.height / 2))) * (apple_rect.height / 2)
+    apple_x = random.randint(0, apple_x_limit) * (apple_rect.width / 2)
+    apple_y = random.randint(0, apple_y_limit) * (apple_rect.height / 2)
 
 # End of Game Values
 
@@ -157,7 +163,6 @@ while not game_ended:
 
     ##### Snake Dead
     if snake.check_if_dead():
-        lose = True
         game_ended = True
 
     ##### Display Rendering
@@ -175,18 +180,16 @@ while not game_ended:
     clock.tick(FPS)
 
 #Show a 'Game Over' screen
-if lose:
-    lose_screen = True
-    while lose_screen:
-        pygame.Surface.fill(window, background_color)
-        pygame.Surface.blit(window, lose_label, (lose_label_x, lose_label_y))
-        pygame.display.update()
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                lose_screen = False
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    lose_screen = False
+while lose:
+    pygame.Surface.fill(window, background_color)
+    pygame.Surface.blit(window, lose_label, (lose_label_x, lose_label_y))
+    pygame.display.update()
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            lose = False
+        if event.type == KEYDOWN:
+            if event.key == K_ESCAPE:
+                lose = False
 
 pygame.quit()
 exit(0)
