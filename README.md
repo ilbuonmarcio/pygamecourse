@@ -25,8 +25,9 @@ by doing environment* with high-level and easy to use tools and libraries like
 - Handling *movement* and being *frame-indepented*
 - *Mouse interaction* and *action-time based events*
 
-### Lesson 05: MineSweeper
+### Lesson 05: SpaceShooter
 - Adding *randomness* to our games
+- Adding 'AI' to our game
 - Changing *level of difficulty* through *settings.txt files*
 - More time to do your stuff today!
 
