@@ -65,11 +65,11 @@ class Snake:
             self.curr_x += self.rect.width * self.speed
 
         # Handle going on walls
-        if self.curr_x > (WIDTH - 31):
+        if self.curr_x > (WIDTH - self.rect.width / 2):
             self.curr_x = 0
         if self.curr_x < 0:
             self.curr_x = WIDTH
-        if self.curr_y > (HEIGHT - 31):
+        if self.curr_y > (HEIGHT - self.rect.height / 2):
             self.curr_y = 0
         if self.curr_y < 0:
             self.curr_y = HEIGHT
@@ -100,8 +100,8 @@ class Snake:
 
     def check_if_eating(self):
         # Function for checking if he is on top of the apple or not
-        if self.curr_x > (apple_x - 33) and self.curr_x < (apple_x + 64)\
-        and self.curr_y > (apple_y - 33) and self.curr_y < (apple_y + 64):
+        if self.curr_x >= (apple_x - self.rect.width / 2) and self.curr_x <= (apple_x + self.rect.width / 2)\
+        and self.curr_y >= (apple_y - self.rect.height / 2) and self.curr_y <= (apple_y + self.rect.height / 2):
             return True
         else:
             return False
@@ -117,14 +117,14 @@ snake = Snake()
 # Apple sprite and initial properties
 apple_sprite = pygame.image.load('./images/apple.png')
 apple_rect = apple_sprite.get_rect()
-apple_x = random.randint(0, 22) * 32
-apple_y = random.randint(0, 16) * 32
+apple_x = random.randint(0, ((WIDTH - apple_rect.width) / (apple_rect.width / 2))) * (apple_rect.width / 2)
+apple_y = random.randint(0, ((HEIGHT - apple_rect.height) / (apple_rect.height / 2))) * (apple_rect.height / 2)
 
 def drop_new_apple():
     # Function for dropping a new one if the existing one is just eaten
     global apple_x, apple_y
-    apple_x = random.randint(0, 22) * 32
-    apple_y = random.randint(0, 16) * 32
+    apple_x = random.randint(0, ((WIDTH - apple_rect.width) / (apple_rect.width / 2))) * (apple_rect.width / 2)
+    apple_y = random.randint(0, ((HEIGHT - apple_rect.height) / (apple_rect.height / 2))) * (apple_rect.height / 2)
 
 # End of Game Values
 
@@ -159,7 +159,6 @@ while not game_ended:
     if snake.check_if_dead():
         lose = True
         game_ended = True
-
 
     ##### Display Rendering
     # Drawing the background-color
