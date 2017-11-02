@@ -11,17 +11,20 @@ by doing environment* with high-level and easy to use tools and libraries like
 - Main PyGame *features and commands*
 - *Structure* of game code
 - Simple demostration about *what can be done* with such simple tools in the right hands!
+
 ![Pong](./screenshots/01_Pong.png)
 
 ### Lesson 02: Frogger
 - *Adding enemies* to our game
 - Start developing some real-world game apps
 - *Have fun coding and debugging for the first time*!
+
 ![Frogger](./screenshots/02_Frogger.png)
 
 ### Lesson 03: Snake
 - *Recreate and reuse ideas* about classics of videogames
 - Use of *variables and functions*
+
 ![Snake](./screenshots/03_Snake.png)
 
 ### Lesson 04: FlappyBird
