@@ -38,8 +38,17 @@ class Ghost:
     def isDead(self):
         if self.player_y < 0:
             return True
+
         if self.player_y > (HEIGHT - self.player_rect.height):
             return True
+
+        if len(list_of_walls_down) != 0:
+            for i in range(len(list_of_walls_down)):
+                if (self.player_y > (list_of_walls_down[i][0] - self.player_rect.height) \
+                    or self.player_y < (list_of_walls_up[i][0] + wall_rect_up.height)) \
+                    and (self.player_x > (list_of_walls_down[i][1] - self.player_rect.width) \
+                    and self.player_x < list_of_walls_down[i][1]):
+                    return True
 
 ghost = Ghost()
 
@@ -48,37 +57,41 @@ def physics():
 
 
 
+list_of_walls_down = []
+list_of_walls_up = []
+wall_sprite_down = pygame.image.load('./images/Wall.png')
+wall_sprite_up = pygame.image.load('./images/Wall_up.png')
+wall_rect_up = wall_sprite_up.get_rect()
+wall_rect_down = wall_sprite_down.get_rect()
 
+speed_wall = 5
 
 class Walls:
 
-    wall_sprite_down = pygame.image.load('./images/Wall.png')
-    wall_rect_down = wall_sprite_down.get_rect()
-    wall_x_down = WIDTH - 300
-    wall_y_down = random.randint((HEIGHT / 2), (HEIGHT - 400))
+    def createWall(self):
+        wall_rect_down = wall_sprite_down.get_rect()
+        wall_x_down = WIDTH + 100
+        wall_y_down = random.randint((HEIGHT / 2), (HEIGHT - 400))
 
-    wall_sprite_up = pygame.image.load('./images/Wall_up.png')
-    wall_rect_up = wall_sprite_up.get_rect()
-    wall_x_up = wall_x_down
-    wall_y_up = wall_y_down - wall_rect_up.height - 700
+        wall_x_up = wall_x_down
+        wall_y_up = wall_y_down - wall_rect_up.height - 700
 
-    list_of_walls_down = []
-    list_of_walls_up = []
+        down_y, down_x = wall_y_down, wall_x_down
+        list_of_walls_down.insert(0, [down_y, down_x])
 
-    down_y, down_x = wall_y_down, wall_x_down
-    list_of_walls_down.insert(0, [down_y, down_x])
-
-    up_y, up_x = wall_y_up, wall_x_up
-    list_of_walls_up.insert(0, [up_y, up_x])
+        up_y, up_x = wall_y_up, wall_x_up
+        list_of_walls_up.insert(0, [up_y, up_x])
 
     def draw(self):
-        for block in self.list_of_walls_down[::-1]:
-            pygame.Surface.blit(window, self.wall_sprite_down, (block[1], block[0]))
-        for block in self.list_of_walls_up[::-1]:
-            pygame.Surface.blit(window, self.wall_sprite_up, (block[1], block[0]))
+        for block in list_of_walls_down[::-1]:
+            pygame.Surface.blit(window, wall_sprite_down, (block[1], block[0]))
+        for block in list_of_walls_up[::-1]:
+            pygame.Surface.blit(window, wall_sprite_up, (block[1], block[0]))
 
 
 wall = Walls()
+timer_generation = 0
+timer_dead = 0
 
 # End of Game Values
 
@@ -102,9 +115,6 @@ while not game_ended:
     if ghost.isDead():
         game_ended = True
 
-    # Walls Moving
-
-
     # Game logic
     physics()
 
@@ -116,6 +126,28 @@ while not game_ended:
 
     # Walls Drawing
     wall.draw()
+
+    # Wall Moving
+    if len(list_of_walls_down) > 0:
+        for i in range(len(list_of_walls_down)):
+            list_of_walls_down[i][1] -= speed_wall
+            list_of_walls_up[i][1] -= speed_wall
+
+    # Wait for wall generation
+    if timer_generation == 120:
+        wall.createWall()
+        timer_generation = 0
+    else:
+        timer_generation += 1
+
+    # Delete a wall
+    if timer_dead == 1200:
+        del list_of_walls_down[-1]
+        del list_of_walls_up[-1]
+        timer_dead = 0
+    else:
+        timer_dead += 1
+
 
     # Display Update
     pygame.display.update()
