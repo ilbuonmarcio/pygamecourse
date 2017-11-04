@@ -99,18 +99,6 @@ timer_generation = 0
 timer_dead = 0
 timer_dead_start = 0
 
-# Delete a wall
-def deleteWall():
-    if timer_dead_start == 1200:
-        if timer_dead == 120:
-            timer_dead = 0
-            return True
-        else:
-            timer_dead += 1
-    else:
-        timer_dead_start += 1
-
-
 
 # End of Game Values
 
@@ -162,9 +150,15 @@ while not game_ended:
         timer_generation += 1
 
     # Delete a wall
-    if deleteWall():
-        del list_of_walls_down[-1]
-        del list_of_walls_up[-1]
+    if timer_dead_start == 1200:
+        if timer_dead == 120:
+            timer_dead = 0
+            del list_of_walls_down[-1]
+            del list_of_walls_up[-1]
+        else:
+            timer_dead += 1
+    else:
+        timer_dead_start += 1
 
     # Display Update
     pygame.display.update()
