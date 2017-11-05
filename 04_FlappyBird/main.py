@@ -4,7 +4,7 @@ import random
 
 pygame.init()
 
-GAME_RES = WIDTH, HEIGHT = 1080, 1920
+GAME_RES = WIDTH, HEIGHT = 1000, 640 # 360, 640
 FPS = 60
 GAME_TITLE = 'Flappy Bird'
 
@@ -15,34 +15,34 @@ clock = pygame.time.Clock()
 # Game Values
 
 background_image = pygame.image.load("./images/Background.png")
+background_image = pygame.transform.scale(background_image,
+                                       (background_image.get_rect().width // 2,
+                                        background_image.get_rect().height // 2))
+background_rect = background_image.get_rect()
+background_delta = 0
 
 
 class Ghost:
 
     player_sprite = pygame.image.load('./images/Ghost.png')
+    player_sprite = pygame.transform.scale(player_sprite,
+                                           (int(player_sprite.get_rect().width * 1.5),
+                                            int(player_sprite.get_rect().height * 1.5)))
     player_rect = player_sprite.get_rect()
     player_x = WIDTH / 6
     player_y = HEIGHT / 2 - player_rect.height / 2
-    speed_up = HEIGHT / 10
-    speed_down = 15
+    speed_up = HEIGHT / 15
+    speed_down = 3
 
     # Set up the bounce of the ghost when mouse is pressed
     def bounce(self):
-        for i in range(10):
-            self.player_y -= self.speed_up / 10
-
-    # Check if the mouse is pressed
-    def isPressed(self):
-        if pygame.mouse.get_pressed()[0]:
-            return True
+        self.player_y -= self.speed_up
 
     # Check if the ghost is touching a wall or is into the screen
     def isDead(self):
-        if self.player_y < 0:
+        if self.player_y < 0 or \
+           self.player_y > HEIGHT - self.player_rect.height:
             return True
-        if self.player_y > (HEIGHT - self.player_rect.height):
-            return True
-
 
         if len(list_of_walls_down) != 0:
             for i in range(len(list_of_walls_down)):
@@ -63,32 +63,38 @@ def physics():
 
 # Set up the elementary values of the walls
 wall_sprite_down = pygame.image.load('./images/Wall.png')
+wall_sprite_down = pygame.transform.scale(wall_sprite_down,
+                                          (wall_sprite_down.get_rect().width // 2,
+                                           wall_sprite_down.get_rect().height // 2))
 wall_sprite_up = pygame.image.load('./images/Wall_up.png')
+wall_sprite_up = pygame.transform.scale(wall_sprite_up,
+                                          (wall_sprite_up.get_rect().width // 2,
+                                           wall_sprite_up.get_rect().height // 2))
 wall_rect_up = wall_sprite_up.get_rect()
 wall_rect_down = wall_sprite_down.get_rect()
 list_of_walls_down = []
 list_of_walls_up = []
-speed_wall = 5
+speed_wall = 7
 
 class Walls:
     # Function that creates walls in a random position
     def createWall(self):
-        wall_x_down = WIDTH + 100
+        wall_x_down = WIDTH
         wall_x_up = wall_x_down
-        wall_y_down = random.randint((HEIGHT / 2), (HEIGHT - 400))
-        wall_y_up = wall_y_down - wall_rect_up.height - 700
+        wall_y_down = random.randint((HEIGHT // 1.8), (HEIGHT // 1.2))
+        wall_y_up = wall_y_down - wall_rect_up.height - wall_rect_up.height // 2
 
         down_y, down_x = wall_y_down, wall_x_down
-        list_of_walls_down.insert(0, [down_y, down_x])
+        list_of_walls_down.append([down_y, down_x])
 
         up_y, up_x = wall_y_up, wall_x_up
-        list_of_walls_up.insert(0, [up_y, up_x])
+        list_of_walls_up.append([up_y, up_x])
 
     # Draw the walls on the screen
     def draw(self):
-        for block in list_of_walls_down[::-1]:
+        for block in list_of_walls_down:
             pygame.Surface.blit(window, wall_sprite_down, (block[1], block[0]))
-        for block in list_of_walls_up[::-1]:
+        for block in list_of_walls_up:
             pygame.Surface.blit(window, wall_sprite_up, (block[1], block[0]))
 
 
@@ -115,32 +121,11 @@ while not game_ended:
             if event.key == K_ESCAPE:
                 game_ended  = True
                 break
-        if ghost.isPressed():
-            ghost.bounce()
-            break
+            if event.key == K_UP:
+                ghost.bounce()
 
-    # Check if the ghost is dead
-    if ghost.isDead():
-        game_ended = True
-
-    # Game logic
+    ##### Game logic
     physics()
-
-    # Fill Background
-    window.blit(background_image, [0, 0])
-
-    # Ghost Drawing
-    pygame.Surface.blit(window, ghost.player_sprite, (ghost.player_x, \
-                                                      ghost.player_y))
-
-    # Walls Drawing
-    wall.draw()
-
-    # Wall Moving
-    if len(list_of_walls_down) > 0:
-        for i in range(len(list_of_walls_down)):
-            list_of_walls_down[i][1] -= speed_wall
-            list_of_walls_up[i][1] -= speed_wall
 
     # Wait for wall generation
     if timer_generation == 120:
@@ -160,7 +145,29 @@ while not game_ended:
     else:
         timer_dead_start += 1
 
-    # Display Update
+    # Wall Moving
+    if len(list_of_walls_down) > 0:
+        for i in range(len(list_of_walls_down)):
+            list_of_walls_down[i][1] -= speed_wall
+            list_of_walls_up[i][1] -= speed_wall
+
+    # Check if the ghost is dead
+    if ghost.isDead():
+        game_ended = True
+
+    # Fill Background
+    for x in range(-background_delta, WIDTH, background_rect.width):
+        window.blit(background_image, [x, 0])
+    background_delta += 1
+
+    # Ghost Drawing
+    pygame.Surface.blit(window, ghost.player_sprite, (ghost.player_x, \
+                                                      ghost.player_y))
+
+    # Walls Drawing
+    wall.draw()
+
+    ##### Display Update
     pygame.display.update()
     clock.tick(FPS)
 
