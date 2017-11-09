@@ -149,20 +149,34 @@ while not game_ended:
 
     ##### Display Rendering
     # Score buffer rendering
-    player1_score_buffer = gamefont.render(str(player1.score), 1, font_color)
-    player2_score_buffer = gamefont.render(str(player2.score), 1, font_color)
+    player1_score_buffer = gamefont.render(str(player1.score),
+                                           1,
+                                            font_color)
+    player2_score_buffer = gamefont.render(str(player2.score),
+                                           1,
+                                            font_color)
 
     # Window reset
     pygame.Surface.fill(window, background_color)
 
     # Game elements drawing
-    pygame.Surface.blit(window, player1_image, (player1.rect.x, player1.rect.y))
-    pygame.Surface.blit(window, player2_image, (player2.rect.x, player2.rect.y))
-    pygame.Surface.blit(window, ball_image, (ball.rect.x, ball.rect.y))
+    pygame.Surface.blit(window,
+                        player1_image,
+                        (player1.rect.x, player1.rect.y))
+    pygame.Surface.blit(window,
+                        player2_image,
+                        (player2.rect.x, player2.rect.y))
+    pygame.Surface.blit(window,
+                        ball_image,
+                        (ball.rect.x, ball.rect.y))
 
     # UI/UX drawing
-    pygame.Surface.blit(window, player1_score_buffer, player1.score_coords)
-    pygame.Surface.blit(window, player2_score_buffer, player2.score_coords)
+    pygame.Surface.blit(window,
+                        player1_score_buffer,
+                        player1.score_coords)
+    pygame.Surface.blit(window,
+                        player2_score_buffer,
+                        player2.score_coords)
 
     ##### Display Update
     pygame.display.update()
