@@ -75,9 +75,9 @@ player1 = Player(player1_image, 'left')
 player2 = Player(player2_image, 'right')
 ball = Ball(ball_image)
 
-
 player_group = pygame.sprite.Group(player1, player2)
 ball_group = pygame.sprite.Group(ball)
+# ball_group = pygame.sprite.Group([Ball(ball_image) for i in range(0, 1)])
 
 
 background_color = (200, 200, 200)
@@ -117,24 +117,25 @@ while not game_ended:
 
     ##### Game logic
     # Move ball
-    ball.rect.x += ball.x_speed
-    ball.rect.y += ball.y_speed
+    for ball in ball_group:
+        ball.rect.x += ball.x_speed
+        ball.rect.y += ball.y_speed
 
-    # Bouce into bars if collision is made
-    if pygame.sprite.spritecollide(ball, player_group, False) != []:
-        ball.x_speed *= -1
+        # Bouce into bars if collision is made
+        if pygame.sprite.spritecollide(ball, player_group, False) != []:
+            ball.x_speed *= -1
 
-    # Keeping ball into screen
-    if ball.rect.x + ball.rect.width >= WIDTH:
-        player1.score += 1
-        ball.reset_ball()
+        # Keeping ball into screen
+        if ball.rect.x + ball.rect.width >= WIDTH:
+            player1.score += 1
+            ball.reset_ball()
 
-    if ball.rect.x <= 0:
-        player2.score += 1
-        ball.reset_ball()
+        if ball.rect.x <= 0:
+            player2.score += 1
+            ball.reset_ball()
 
-    if ball.rect.y + ball.rect.height >= HEIGHT or ball.rect.y <= 0:
-        ball.y_speed *= -1
+        if ball.rect.y + ball.rect.height >= HEIGHT or ball.rect.y <= 0:
+            ball.y_speed *= -1
 
     # Keeping bars into screen
     if player1.rect.y + player1.rect.height >= HEIGHT - 20:
@@ -160,15 +161,8 @@ while not game_ended:
     pygame.Surface.fill(window, background_color)
 
     # Game elements drawing
-    pygame.Surface.blit(window,
-                        player1_image,
-                        (player1.rect.x, player1.rect.y))
-    pygame.Surface.blit(window,
-                        player2_image,
-                        (player2.rect.x, player2.rect.y))
-    pygame.Surface.blit(window,
-                        ball_image,
-                        (ball.rect.x, ball.rect.y))
+    player_group.draw(window)
+    ball_group.draw(window)
 
     # UI/UX drawing
     pygame.Surface.blit(window,
