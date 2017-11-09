@@ -128,7 +128,7 @@ while not game_ended:
     physics()
 
     # Wait for wall generation
-    if timer_generation == 120:
+    if timer_generation == 60:
         wall.createWall()
         timer_generation = 0
     else:
