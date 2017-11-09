@@ -17,41 +17,72 @@ font_color = (0, 0, 0)
 
 # Game Values
 
-player_sprite = pygame.image.load('./images/player_sprite.png')
-player_rect = player_sprite.get_rect()
-player_x = 20
-player_y = HEIGHT // 2 - player_rect.height // 2
-player_score = 0
-player_score_coords = (50, 20)
+class Player(pygame.sprite.Sprite):
 
-enemy_sprite = pygame.image.load('./images/enemy_sprite.png')
-enemy_rect = enemy_sprite.get_rect()
-enemy_x = WIDTH - 20 - enemy_rect.width
-enemy_y = HEIGHT // 2 - enemy_rect.height // 2
-enemy_score = 0
-enemy_score_coords = (WIDTH - 60, 20)
+    def __init__(self, image, side='left'):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.y_speed = 10
 
-bar_speed = player_y_speed = enemy_y_speed = 15
+        self.score = 0
+        self.set_side(side)
 
-ball_sprite = pygame.image.load('./images/ball_sprite.png')
-ball_rect = ball_sprite.get_rect()
-ball_x = WIDTH // 2 - ball_rect.width // 2
-ball_y = HEIGHT // 2 - ball_rect.height // 2
-ball_x_speed = random.choice((-5, -4, -3, 3, 4, 5))
-ball_y_speed = random.choice((-5, -4, -3, 3, 4, 5))
+    def set_side(self, side='left'):
+        if side == 'left':
+            self.rect.x = 20
+            self.rect.y = HEIGHT // 2 - self.rect.height // 2
+            self.score_coords = (20, 20)
+        if side == 'right':
+            self.rect.x = WIDTH - 20 - self.rect.width
+            self.rect.y = HEIGHT // 2 - self.rect.height // 2
+            self.score_coords = (WIDTH - 50, 20)
+
+
+class Ball(pygame.sprite.Sprite):
+
+    def __init__(self, image, x_speed=None, y_speed=None):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = self.image.get_rect()
+
+        if x_speed == None:
+            self.x_speed = random.choice((-5, -4, -3, 3, 4, 5))
+        else:
+            self.x_speed = x_speed
+
+        if y_speed == None:
+            self.y_speed = random.choice((-5, -4, -3, 3, 4, 5))
+        else:
+            self.y_speed = y_speed
+
+        self.rect.x = WIDTH // 2 - self.rect.width // 2
+        self.rect.y = HEIGHT // 2 - self.rect.height // 2
+
+    def reset_ball(self):
+        self.rect.x = WIDTH // 2 - self.rect.width // 2
+        self.rect.y = HEIGHT // 2 - self.rect.height // 2
+        self.x_speed = random.choice((-5, -4, -3, 3, 4, 5))
+        self.y_speed = random.choice((-5, -4, -3, 3, 4, 5))
+
+
+player1_image = pygame.image.load('./images/player_sprite.png')
+player2_image = pygame.image.load('./images/enemy_sprite.png')
+ball_image = pygame.image.load('./images/ball_sprite.png')
+
+
+player1 = Player(player1_image, 'left')
+player2 = Player(player2_image, 'right')
+ball = Ball(ball_image)
+
+
+player_group = pygame.sprite.Group(player1, player2)
+ball_group = pygame.sprite.Group(ball)
+
 
 background_color = (200, 200, 200)
 
 # End of Game Values
-
-# Game Functions
-
-def reset_ball():
-    global ball_x, ball_y, ball_x_speed, ball_y_speed
-    ball_x = WIDTH // 2 - ball_rect.width // 2
-    ball_y = HEIGHT // 2 - ball_rect.height // 2
-    ball_x_speed = random.choice((-5, -4, -3, 3, 4, 5))
-    ball_y_speed = random.choice((-5, -4, -3, 3, 4, 5))
 
 # Game loop
 game_ended = False
@@ -69,82 +100,69 @@ while not game_ended:
                 game_ended  = True
                 break
 
-    # Player's Input Handling
+    # Players' Input Handling
     keys_pressed = pygame.key.get_pressed()
 
-    # Player Input
+    # Player1 Input
     if keys_pressed[K_w]:
-        player_y -= bar_speed
+        player1.rect.y -= player1.y_speed
     if keys_pressed[K_s]:
-        player_y += bar_speed
+        player1.rect.y += player1.y_speed
 
-    # Enemy Input
+    # Player2 Input
     if keys_pressed[K_o]:
-        enemy_y -= bar_speed
+        player2.rect.y -= player2.y_speed
     if keys_pressed[K_k]:
-        enemy_y += bar_speed
+        player2.rect.y += player2.y_speed
 
     ##### Game logic
     # Move ball
-    ball_x += ball_x_speed
-    ball_y += ball_y_speed
+    ball.rect.x += ball.x_speed
+    ball.rect.y += ball.y_speed
 
     # Bouce into bars if collision is made
-    if  ball_x >= player_x and \
-        ball_x < player_x + player_rect.width and \
-        ball_y + ball_rect.height >= player_y and \
-        ball_y < player_y + player_rect.height:
-
-        ball_x_speed *= -1
-        ball_x = player_x + player_rect.width + 1
-
-    if  ball_x + ball_rect.width >= enemy_x and \
-        ball_x + ball_rect.height < enemy_x + enemy_rect.width and \
-        ball_y + ball_rect.height >= enemy_y and \
-        ball_y < enemy_y + enemy_rect.height:
-
-        ball_x_speed *= -1
-        ball_x = enemy_x - ball_rect.width - 1
+    if pygame.sprite.spritecollide(ball, player_group, False) != []:
+        ball.x_speed *= -1
 
     # Keeping ball into screen
-    if ball_x + ball_rect.width >= WIDTH:
-        player_score += 1
-        reset_ball()
+    if ball.rect.x + ball.rect.width >= WIDTH:
+        player1.score += 1
+        ball.reset_ball()
 
-    if ball_x <= 0:
-        enemy_score += 1
-        reset_ball()
+    if ball.rect.x <= 0:
+        player2.score += 1
+        ball.reset_ball()
 
-    if ball_y + ball_rect.height >= HEIGHT or ball_y <= 0:
-        ball_y_speed *= -1
+    if ball.rect.y + ball.rect.height >= HEIGHT or ball.rect.y <= 0:
+        ball.y_speed *= -1
 
     # Keeping bars into screen
-    if player_y + player_rect.height >= HEIGHT - 20:
-        player_y = HEIGHT - player_rect.height - 20
-    if player_y < 20:
-        player_y = 20
+    if player1.rect.y + player1.rect.height >= HEIGHT - 20:
+        player1.rect.y = HEIGHT - player1.rect.height - 20
+    if player1.rect.y < 20:
+        player1.rect.y = 20
 
-    if enemy_y + enemy_rect.height >= HEIGHT - 20:
-        enemy_y = HEIGHT - enemy_rect.height - 20
-    if enemy_y < 20:
-        enemy_y = 20
+    if player2.rect.y + player2.rect.height >= HEIGHT - 20:
+        player2.rect.y = HEIGHT - player2.rect.height - 20
+    if player2.rect.y < 20:
+        player2.rect.y = 20
 
     ##### Display Rendering
     # Score buffer rendering
-    player_score_buffer = gamefont.render(str(player_score), 1, font_color)
-    enemy_score_buffer = gamefont.render(str(enemy_score), 1, font_color)
+    player1_score_buffer = gamefont.render(str(player1.score), 1, font_color)
+    player2_score_buffer = gamefont.render(str(player2.score), 1, font_color)
 
     # Window reset
     pygame.Surface.fill(window, background_color)
 
     # Game elements drawing
-    pygame.Surface.blit(window, player_sprite, (player_x, player_y))
-    pygame.Surface.blit(window, enemy_sprite, (enemy_x, enemy_y))
-    pygame.Surface.blit(window, ball_sprite, (ball_x, ball_y))
+    pygame.Surface.blit(window, player1_image, (player1.rect.x, player1.rect.y))
+    pygame.Surface.blit(window, player2_image, (player2.rect.x, player2.rect.y))
+    pygame.Surface.blit(window, ball_image, (ball.rect.x, ball.rect.y))
 
     # UI/UX drawing
-    pygame.Surface.blit(window, player_score_buffer, player_score_coords)
-    pygame.Surface.blit(window, enemy_score_buffer, enemy_score_coords)
+    pygame.Surface.blit(window, player1_score_buffer, player1.score_coords)
+    pygame.Surface.blit(window, player2_score_buffer, player2.score_coords)
 
     ##### Display Update
     pygame.display.update()
