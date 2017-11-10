@@ -64,7 +64,8 @@ class Label(pygame.sprite.Sprite):
         self.rect.y = HEIGHT // 2 - self.rect.height // 2
 
 player = Player(player_images)
-enemies = [Enemy(enemy_image, random.choice([-1, 1])) for _ in range(0, difficulty*2)]
+enemies = [Enemy(enemy_image, random.choice([-1, 1]))
+           for _ in range(0, difficulty*2)]
 win_label = Label(gamefont, "You Win!")
 lose_label = Label(gamefont, "You Lose!")
 
@@ -100,7 +101,8 @@ while not game_ended:
                 player.rect.x = 400
                 player.rect.y = 500
                 difficulty += 1
-                enemies = [Enemy(enemy_image, random.choice([-1, 1])) for _ in range(0, difficulty*2)]
+                enemies = [Enemy(enemy_image, random.choice([-1, 1]))
+                           for _ in range(0, difficulty*2)]
                 enemy_group = pygame.sprite.Group(*enemies)
 
     ##### Game logic
