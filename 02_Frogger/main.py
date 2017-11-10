@@ -16,44 +16,62 @@ font_color = (255, 255, 255)
 
 # Game Values
 
-difficulty = 2
+difficulty = 1
 win = None
 
 background_color = (100, 210, 60) # RGB value
 street_color = (15, 15, 15)
 
-win_label = gamefont.render("You Win!", 1, font_color)
-win_rect = win_label.get_rect()
-win_label_x = WIDTH // 2 - win_rect.width // 2
-win_label_y = HEIGHT // 2 - win_rect.height // 2
+player_images = {
+    'alive' : pygame.image.load('./images/player_sprite.png'),
+    'win'   : pygame.image.load('./images/player_win_sprite.png'),
+    'lose'  : pygame.image.load('./images/player_lose_sprite.png')
+}
 
-lose_label = gamefont.render("You Lose!", 1, font_color)
-lose_rect = lose_label.get_rect()
-lose_label_x = WIDTH // 2 - lose_rect.width // 2
-lose_label_y = HEIGHT // 2 - lose_rect.height // 2
+enemy_image = pygame.image.load('./images/enemy_sprite.png')
 
-player_sprite = pygame.image.load('./images/player_sprite.png')
-player_win_sprite = pygame.image.load('./images/player_win_sprite.png')
-player_lose_sprite = pygame.image.load('./images/player_lose_sprite.png')
-player_rect = player_sprite.get_rect()
-player_x = 400
-player_y = 500
+class Player(pygame.sprite.Sprite):
 
-enemy_sprite = pygame.image.load('./images/enemy_sprite.png')
-enemy_rect = enemy_sprite.get_rect()
+    def __init__(self, images):
+        pygame.sprite.Sprite.__init__(self)
+        self.images = images
+        self.image = images['alive']
+        self.rect = self.image.get_rect()
+        self.rect.x = 400
+        self.rect.y = 500
 
-class Enemy:
+    def set_current_sprite(self, key):
+        self.image = self.images[key]
 
-    def __init__(self, y):
-        if y in [100, 300]:
-            self.x = -1*enemy_rect.width + random.randint(-WIDTH // 2, WIDTH // 2)
-            self.x_speed = random.randint(2*difficulty, 3*difficulty)
-        if y in [200, 400]:
-            self.x = WIDTH + random.randint(-WIDTH // 2, WIDTH // 2)
-            self.x_speed = random.randint(-3*difficulty, -2*difficulty)
-        self.y = y
+class Enemy(pygame.sprite.Sprite):
 
-list_of_enemies = [[Enemy(y) for _ in range(0, difficulty)] for y in [100, 200, 300, 400]]
+    def __init__(self, image, direction=1):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randint(-self.rect.width, WIDTH)
+        self.rect.y = random.choice([100, 200, 300, 400])
+
+        self.x_speed = direction * difficulty * random.randint(2, 3)
+
+class Label(pygame.sprite.Sprite):
+
+    def __init__(self, font, string):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = font.render(string, 1, font_color)
+        self.rect = self.image.get_rect()
+        self.rect.x = WIDTH // 2 - self.rect.width // 2
+        self.rect.y = HEIGHT // 2 - self.rect.height // 2
+
+player = Player(player_images)
+enemies = [Enemy(enemy_image, random.choice([-1, 1])) for _ in range(0, difficulty*2)]
+win_label = Label(gamefont, "You Win!")
+lose_label = Label(gamefont, "You Lose!")
+
+player_group = pygame.sprite.GroupSingle(player)
+enemy_group = pygame.sprite.Group(*enemies)
+win_label_group = pygame.sprite.GroupSingle(win_label)
+lose_label_group = pygame.sprite.GroupSingle(lose_label)
 
 # End of Game Values
 
@@ -71,54 +89,46 @@ while not game_ended:
                 game_ended  = True
                 break
             if event.key == K_UP and win == None:
-                player_y -= 100
+                player.rect.y -= 100
             if event.key == K_LEFT and win == None:
-                player_x -= 100
+                player.rect.x -= 100
             if event.key == K_RIGHT and win == None:
-                player_x += 100
+                player.rect.x += 100
+            if event.key == K_SPACE and win == True:
+                # Increasing Difficulty
+                win = None
+                player.rect.x = 400
+                player.rect.y = 500
+                difficulty += 1
+                enemies = [Enemy(enemy_image, random.choice([-1, 1])) for _ in range(0, difficulty*2)]
+                enemy_group = pygame.sprite.Group(*enemies)
 
     ##### Game logic
     # Keeping player into screen
-    if player_x < 0:
-        player_x = 0
-    if player_x + player_rect.width >= WIDTH:
-        player_x = WIDTH - player_rect.width
+    if player.rect.x < 0:
+        player.rect.x = 0
+    if player.rect.x + player.rect.width >= WIDTH:
+        player.rect.x = WIDTH - player.rect.width
 
     # Moving enemies
-    for row in list_of_enemies:
-        for enemy in row:
-            enemy.x += enemy.x_speed
+    for enemy in enemies:
+        enemy.rect.x += enemy.x_speed
 
     # Keeping enemies into screen
-    for row in list_of_enemies:
-        for enemy in row:
-            if enemy.x < -enemy_rect.width:
-                enemy.x = WIDTH
-            elif enemy.x > WIDTH:
-                enemy.x = -enemy_rect.width
+    for enemy in enemies:
+        if enemy.rect.x < -enemy.rect.width:
+            enemy.rect.x = WIDTH
+        elif enemy.rect.x > WIDTH:
+            enemy.rect.x = -enemy.rect.width
 
     # Check if player won the game
-    if player_y == 0 and win == None:
+    if player.rect.y == 0 and win == None:
         win = True
 
     # Control if player hits enemies
-    for row in list_of_enemies:
-        for enemy in row:
-            if enemy.x_speed < 0:
-                if  enemy.x > player_x and \
-                    enemy.x < player_x + player_rect.width and \
-                    enemy.y + enemy_rect.height > player_y and \
-                    enemy.y < player_y + player_rect.height and \
-                    win == None:
-                    win = False
-            if enemy.x_speed > 0:
-                if  enemy.x + enemy_rect.width > player_x and \
-                    enemy.x + enemy_rect.height < player_x + player_rect.width and \
-                    enemy.y + enemy_rect.height > player_y and \
-                    enemy.y < player_y + player_rect.height and \
-                    win == None:
-                    win = False
-
+    for enemy in enemies:
+        if pygame.sprite.spritecollide(player, enemy_group, False) != []:
+            win = False
 
     ##### Display rendering
     pygame.Surface.fill(window, background_color)
@@ -129,24 +139,25 @@ while not game_ended:
         for x in range(0, WIDTH, 75):
             pygame.draw.rect(window, (255, 255, 255), (x, y, 30, 2))
 
-    # Frog Drawing
+    # Frog Image Swapping
     if win == None:
-        pygame.Surface.blit(window, player_sprite, (player_x, player_y))
+        player.set_current_sprite('alive')
     if win == True:
-        pygame.Surface.blit(window, player_win_sprite, (player_x, player_y))
+        player.set_current_sprite('win')
     if win == False:
-        pygame.Surface.blit(window, player_lose_sprite, (player_x, player_y))
+        player.set_current_sprite('lose')
+
+    # Player Drawing
+    player_group.draw(window)
 
     # Enemy Drawing
-    for row in list_of_enemies:
-        for enemy in row:
-            pygame.Surface.blit(window, enemy_sprite, (enemy.x, enemy.y))
+    enemy_group.draw(window)
 
     # Win/Lose Label Drawing
     if win == True:
-        pygame.Surface.blit(window, win_label, (win_label_x, win_label_y))
+        win_label_group.draw(window)
     if win == False:
-        pygame.Surface.blit(window, lose_label, (lose_label_x, lose_label_y))
+        lose_label_group.draw(window)
 
 
     ##### Display Update
