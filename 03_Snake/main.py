@@ -18,119 +18,112 @@ font_color = (255, 255, 255)
 
 background_color = (150, 150, 150) # RGB value
 
-#Settin up the Game over screen
-lose_label = gamefont.render("You Lose!", 1, font_color)
-lose_rect = lose_label.get_rect()
-lose_label_x = WIDTH // 2 - lose_rect.width // 2
-lose_label_y = HEIGHT // 2 - lose_rect.height // 2
-
-lose = False
+body_image = pygame.image.load('./images/snake_block.png')
+head_image = pygame.image.load('./images/snake_head.png')
+apple_image = pygame.image.load('./images/apple.png')
 
 # Class for representing the snake
-class Snake:
+class SnakeHead(pygame.sprite.Sprite):
 
     # Initialization methon
-    def __init__(self):
-
+    def __init__(self, image, snake_tail):
+        pygame.sprite.Sprite.__init__(self)
         # Sprite loading
-        self.block_sprite = pygame.image.load('./images/snake_block.png')
-        self.head_sprite = pygame.image.load('./images/snake_head.png')
-        self.rect = self.block_sprite.get_rect()
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.snake_tail = snake_tail
 
         # Current coords and previous coordinates variables
         # initialized to these values
-        self.curr_x = WIDTH / 2
-        self.curr_y = HEIGHT / 2
-        self.last_x = None
+        self.rect.x = random.choice([
+            x for x in range(0, WIDTH - self.rect.width, self.rect.width)
+        ])
+        self.rect.y = random.choice([
+            y for y in range(0, HEIGHT - self.rect.height, self.rect.height)
+        ])
+        self.last_y = None
         self.last_y = None
 
-        # List representing snake's tail
-        self.tail = []
-
+        self.x_speed = self.rect.width // 2
+        self.y_speed = self.rect.height // 2
         self.direction = 'right'
-        self.speed = 0.5
 
     def move(self):
         # Called every frame, it's responsible for snake's movement
-        self.last_x, self.last_y = self.curr_x, self.curr_y
+        self.last_x, self.last_y = self.rect.x, self.rect.y
 
         # Move the snake accordingly to the direction
         if self.direction == 'up':
-            self.curr_y -= self.rect.height * self.speed
+            self.rect.y -= self.y_speed
         if self.direction == 'down':
-            self.curr_y += self.rect.height * self.speed
+            self.rect.y += self.y_speed
         if self.direction == 'left':
-            self.curr_x -= self.rect.width * self.speed
+            self.rect.x -= self.x_speed
         if self.direction == 'right':
-            self.curr_x += self.rect.width * self.speed
+            self.rect.x += self.x_speed
 
         # Handle going on walls
-        if self.curr_x > (WIDTH - self.rect.width / 2):
-            self.curr_x = 0
-        if self.curr_x < 0:
-            self.curr_x = WIDTH
-        if self.curr_y > (HEIGHT - self.rect.height / 2):
-            self.curr_y = 0
-        if self.curr_y < 0:
-            self.curr_y = HEIGHT
+        if self.rect.x + self.rect.width > WIDTH:
+            self.rect.x = 0
+        if self.rect.x < 0:
+            self.rect.x = WIDTH - self.rect.width
+        if self.rect.y + self.rect.height > HEIGHT:
+            self.rect.y = 0
+        if self.rect.y < 0:
+            self.rect.y = HEIGHT - self.rect.height
 
-        # Drop the last block of tail and create a new one
-        # at index 0, simulating tail's movement
-        if len(self.tail) > 0:
-            del self.tail[len(self.tail)-1]
-            self.add_block()
-
-        # Check if snake is on top of an apple
-        # and do stuff accordingly
-        if self.check_if_eating():
-            drop_new_apple()
-            self.add_block()
-
-    def draw(self):
-        # Simply draw the snake onto screen, with drawing
-        # tail in reverse order to make it cooler to see
-        for block in self.tail[::-1]:
-            pygame.Surface.blit(window, self.block_sprite, (block[0], block[1]))
-        pygame.Surface.blit(window, self.head_sprite, (self.curr_x, self.curr_y))
+        self.check_if_eating()
 
     def add_block(self):
-        # Function responsible for handling snake's growing up
-        x, y = self.last_x, self.last_y
-        self.tail.insert(0, [x, y])
+        snake_tail.append(SnakeBody(body_image, self.last_x, self.last_y))
+        snake_group = pygame.sprite.Group(self, self.snake_tail)
 
     def check_if_eating(self):
-        # Function for checking if he is on top of the apple or not
-        if self.curr_x >= (apple_x - self.rect.width / 2) \
-           and self.curr_x <= (apple_x + self.rect.width / 2) \
-           and self.curr_y >= (apple_y - self.rect.height / 2) \
-           and self.curr_y <= (apple_y + self.rect.height / 2):
-            return True
-        else:
-            return False
+        for apple in pygame.sprite.spritecollide(self, apple_group, False):
+            apple.reset()
+            self.add_block()
 
     def check_if_dead(self):
-        # Function for checking if snake aet himself
-        for i in range(len(self.tail)):
-            if self.curr_x == self.tail[i][0] \
-               and self.curr_y == self.tail[i][1]:
-                return True
+        pass
 
-snake = Snake()
+class SnakeBody(pygame.sprite.Sprite):
 
-# Apple sprite and initial properties
-apple_sprite = pygame.image.load('./images/apple.png')
-apple_rect = apple_sprite.get_rect()
-apple_x_limit = ((WIDTH - apple_rect.width) / (apple_rect.width / 2))
-apple_y_limit = ((HEIGHT - apple_rect.height) / (apple_rect.height / 2))
+    def __init__(self, image, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
 
-apple_x = random.randint(0, apple_x_limit) * (apple_rect.width / 2)
-apple_y = random.randint(0, apple_y_limit) * (apple_rect.height / 2)
+class Apple(pygame.sprite.Sprite):
 
-def drop_new_apple():
-    # Function for dropping a new one if the existing one is just eaten
-    global apple_x, apple_y
-    apple_x = random.randint(0, apple_x_limit) * (apple_rect.width / 2)
-    apple_y = random.randint(0, apple_y_limit) * (apple_rect.height / 2)
+    def __init__(self, image, x=None, y=None):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = self.image.get_rect()
+
+        if x == None:
+            self.rect.x = random.randint(0, WIDTH - self.rect.width)
+        else:
+            self.rect.x = x
+
+        if y == None:
+            self.rect.y = random.randint(0, HEIGHT - self.rect.height)
+        else:
+            self.rect.y = y
+
+    def reset(self):
+        self.rect.x = random.randint(0, WIDTH - self.rect.width)
+        self.rect.y = random.randint(0, HEIGHT - self.rect.height)
+
+snake_tail = []
+snake = SnakeHead(head_image, snake_tail)
+
+snake_group = pygame.sprite.Group(snake, *snake_tail)
+
+apple_list = [Apple(apple_image) for _ in range(0, 3)]
+
+apple_group = pygame.sprite.Group(*apple_list)
 
 # End of Game Values
 
@@ -170,10 +163,10 @@ while not game_ended:
     pygame.Surface.fill(window, background_color)
 
     # Drawing the apple
-    pygame.Surface.blit(window, apple_sprite, (apple_x, apple_y))
+    apple_group.draw(window)
 
     # Drawing the snake
-    snake.draw()
+    snake_group.draw(window)
 
     ##### Display Update
     pygame.display.update()
