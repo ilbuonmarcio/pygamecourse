@@ -31,7 +31,6 @@ class SnakeHead(pygame.sprite.Sprite):
         # Sprite loading
         self.image = image
         self.rect = self.image.get_rect()
-        self.snake_tail = snake_tail
 
         # Current coords and previous coordinates variables
         # initialized to these values
@@ -74,9 +73,17 @@ class SnakeHead(pygame.sprite.Sprite):
 
         self.check_if_eating()
 
+        if len(snake_tail) > 0:
+            snake_tail.pop()
+            snake_tail.insert(0, SnakeBody(body_image, self.last_x, self.last_y))
+            global snake_group
+            snake_group = pygame.sprite.Group(self, *snake_tail)
+
     def add_block(self):
+        global snake_group
         snake_tail.append(SnakeBody(body_image, self.last_x, self.last_y))
-        snake_group = pygame.sprite.Group(self, self.snake_tail)
+        snake_group = pygame.sprite.Group(self, *snake_tail)
+        print(len(snake_group))
 
     def check_if_eating(self):
         for apple in pygame.sprite.spritecollide(self, apple_group, False):
