@@ -86,7 +86,6 @@ class SnakeHead(pygame.sprite.Sprite):
         global snake_group
         snake_tail.append(SnakeBody(body_image, self.last_x, self.last_y))
         snake_group = pygame.sprite.Group(self, *snake_tail)
-        print(len(snake_group))
 
     def check_if_eating(self):
         for apple in pygame.sprite.spritecollide(self, apple_group, False):
@@ -134,7 +133,7 @@ snake = SnakeHead(head_image, snake_tail)
 
 snake_group = pygame.sprite.Group(snake, *snake_tail)
 
-apple_list = [Apple(apple_image) for _ in range(0, 3)]
+apple_list = [Apple(apple_image) for _ in range(0, 1)]
 
 apple_group = pygame.sprite.Group(*apple_list)
 
