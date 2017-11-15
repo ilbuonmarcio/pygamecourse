@@ -4,7 +4,7 @@ import random
 
 pygame.init()
 
-GAME_RES = WIDTH, HEIGHT = 640, 480
+GAME_RES = WIDTH, HEIGHT = 640, 700
 FPS = 60
 GAME_TITLE = 'FlappyBird - MarconiGames'
 
@@ -126,8 +126,10 @@ bat = Bat(bat_images)
 bat_group = pygame.sprite.GroupSingle(bat)
 
 walls = [
-    [WallDown(wall_down_image, WIDTH, y), WallUp(wall_up_image, WIDTH, y - bat.rect.height - space - wall_up_image.get_rect().height)]
-    for y in [HEIGHT // 2 + space // 2]
+    [
+        WallDown(wall_down_image, WIDTH, y),
+        WallUp(wall_up_image, WIDTH, y - bat.rect.height - space - wall_up_image.get_rect().height)
+    ] for y in [HEIGHT // 2 + space // 2]
 ]
 
 walls = sum(walls, [])
