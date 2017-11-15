@@ -17,15 +17,40 @@ clock = pygame.time.Clock()
 background_color = (150, 150, 150) # RGB value
 space = 120
 
-ghost_image = pygame.image.load('./images/ghost.png')
+# https://opengameart.org/content/2d-monster-bat-enemy <-- CC-BY 3.0
+bat_images = [
+    pygame.image.load('./images/bat/__Bat02_Fly_000.png'),
+    pygame.image.load('./images/bat/__Bat02_Fly_001.png'),
+    pygame.image.load('./images/bat/__Bat02_Fly_002.png'),
+    pygame.image.load('./images/bat/__Bat02_Fly_003.png'),
+    pygame.image.load('./images/bat/__Bat02_Fly_004.png'),
+    pygame.image.load('./images/bat/__Bat02_Fly_005.png'),
+    pygame.image.load('./images/bat/__Bat02_Fly_006.png'),
+    pygame.image.load('./images/bat/__Bat02_Fly_007.png'),
+]
+# https://opengameart.org/content/2d-monster-bat-enemy <-- CC-BY 3.0
+
 wall_down_image = pygame.image.load('./images/wall_down.png')
 wall_up_image = pygame.image.load('./images/wall_up.png')
 
-class Ghost(pygame.sprite.Sprite):
+background_image = pygame.image.load('./images/background.png')
+background_image = pygame.transform.scale(
+    background_image,
+    (WIDTH, HEIGHT)
+)
 
-    def __init__(self, image):
+vignette_image = pygame.image.load('./images/vignette.png')
+vignette_image = pygame.transform.scale(
+    vignette_image,
+    (WIDTH, HEIGHT)
+)
+
+class Bat(pygame.sprite.Sprite):
+
+    def __init__(self, images):
         pygame.sprite.Sprite.__init__(self)
-        self.image = image
+        self.image = images[0]
+        self.images = images
         self.rect = self.image.get_rect()
         self.rect.x = WIDTH // 6
         self.rect.y = HEIGHT // 2 - self.rect.height // 2
@@ -33,11 +58,16 @@ class Ghost(pygame.sprite.Sprite):
         self.y_gravity = 0.005
         self.x_speed = 0
         self.y_speed = -0.75
+        self.animation_delta = 40
+        self.animation_counter = 0
+        self.animation_current_index = 0
 
     def move(self, deltatime):
         self.rect.y  += self.y_speed * deltatime
         self.y_speed += self.y_gravity * deltatime
         self.rect.y  += self.y_speed
+
+        self.animate(deltatime)
 
         self.is_dead()
 
@@ -48,6 +78,13 @@ class Ghost(pygame.sprite.Sprite):
         global game_ended
         if len(pygame.sprite.spritecollide(self, wall_group, False)) > 0:
             game_ended = True
+
+    def animate(self, deltatime):
+        self.animation_counter += deltatime
+        if self.animation_counter > self.animation_delta:
+            self.animation_counter = 0
+            self.animation_current_index += 1
+            self.image = self.images[self.animation_current_index % len(self.images)]
 
 class Wall(pygame.sprite.Sprite):
 
@@ -82,14 +119,14 @@ class WallUp(Wall):
         Wall.move(self)
         if self.rect.x < -self.rect.width:
             self.rect.x = WIDTH
-            self.rect.y = HEIGHT // 2 + space // 2 - ghost.rect.height - space - self.rect.height
+            self.rect.y = HEIGHT // 2 + space // 2 - bat.rect.height - space - self.rect.height
 
 
-ghost = Ghost(ghost_image)
-ghost_group = pygame.sprite.GroupSingle(ghost)
+bat = Bat(bat_images)
+bat_group = pygame.sprite.GroupSingle(bat)
 
 walls = [
-    [WallDown(wall_down_image, WIDTH, y), WallUp(wall_up_image, WIDTH, y - ghost.rect.height - space - wall_up_image.get_rect().height)]
+    [WallDown(wall_down_image, WIDTH, y), WallUp(wall_up_image, WIDTH, y - bat.rect.height - space - wall_up_image.get_rect().height)]
     for y in [HEIGHT // 2 + space // 2]
 ]
 
@@ -113,17 +150,19 @@ while not game_ended:
             if event.key == K_ESCAPE:
                 game_ended  = True
             if event.key == K_SPACE:
-                ghost.jump()
+                bat.jump()
 
     # Game logic
-    ghost.move(deltatime)
+    bat.move(deltatime)
     for wall in wall_group:
         wall.move()
 
     # Display update
-    pygame.Surface.fill(window, background_color)
-    ghost_group.draw(window)
+    # pygame.Surface.fill(window, background_color)
+    pygame.Surface.blit(window, background_image, (0, 0))
+    bat_group.draw(window)
     wall_group.draw(window)
+    pygame.Surface.blit(window, vignette_image, (0, 0))
 
     pygame.display.update()
     clock.tick(FPS)
