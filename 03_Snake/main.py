@@ -18,10 +18,18 @@ font_color = (255, 255, 255)
 
 background_color = (150, 150, 150) # RGB value
 
+# https://opengameart.org/content/snake-graphics <-- CC-BY 3.0
 body_image = pygame.image.load('./images/snake_block.png')
 head_image = pygame.image.load('./images/snake_head.png')
 apple_image = pygame.image.load('./images/apple.png')
 background_image = pygame.image.load('./images/background.png')
+# https://opengameart.org/content/snake-graphics <-- CC-BY 3.0
+
+vignette_image = pygame.image.load('./images/vignette.png')
+vignette_image = pygame.transform.scale(
+    vignette_image,
+    (WIDTH, HEIGHT)
+)
 
 # Class for representing the snake
 class SnakeHead(pygame.sprite.Sprite):
@@ -181,6 +189,9 @@ while not game_ended:
 
     # Drawing the snake
     snake_group.draw(window)
+
+    # Drawing the vignette
+    pygame.Surface.blit(window, vignette_image, (0, 0))
 
     ##### Display Update
     pygame.display.update()
