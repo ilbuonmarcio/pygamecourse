@@ -18,7 +18,8 @@ background_color = (150, 150, 150) # RGB value
 space = 120
 
 ghost_image = pygame.image.load('./images/ghost.png')
-wall_image = pygame.image.load('./images/wall.png')
+wall_down_image = pygame.image.load('./images/wall_down.png')
+wall_up_image = pygame.image.load('./images/wall_up.png')
 
 class Ghost(pygame.sprite.Sprite):
 
@@ -88,7 +89,7 @@ ghost = Ghost(ghost_image)
 ghost_group = pygame.sprite.GroupSingle(ghost)
 
 walls = [
-    [WallDown(wall_image, WIDTH, y), WallUp(wall_image, WIDTH, y - ghost.rect.height - space - wall_image.get_rect().height)]
+    [WallDown(wall_down_image, WIDTH, y), WallUp(wall_up_image, WIDTH, y - ghost.rect.height - space - wall_up_image.get_rect().height)]
     for y in [HEIGHT // 2 + space // 2]
 ]
 
