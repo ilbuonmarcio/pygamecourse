@@ -6,7 +6,7 @@ pygame.init()
 
 GAME_RES = WIDTH, HEIGHT = 640, 480
 FPS = 60
-GAME_TITLE = 'Default Game Title'
+GAME_TITLE = 'FlappyBird - MarconiGames'
 
 window = pygame.display.set_mode(GAME_RES, HWACCEL|HWSURFACE|DOUBLEBUF)
 pygame.display.set_caption(GAME_TITLE)
