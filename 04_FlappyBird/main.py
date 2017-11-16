@@ -78,7 +78,7 @@ class Bat(pygame.sprite.Sprite):
         self.y_speed = -0.75
 
     def is_dead(self):
-        # return
+        return
         global game_ended
         if len(pygame.sprite.spritecollide(self, wall_group, False)) > 0:
             game_ended = True
@@ -115,6 +115,7 @@ class WallDown(Wall):
         if self.rect.x < -self.rect.width:
             self.rect.x = WIDTH
             self.rect.y = HEIGHT // 2 + space // 2
+            move_walls()
 
 class WallUp(Wall):
 
@@ -126,6 +127,12 @@ class WallUp(Wall):
         if self.rect.x < -self.rect.width:
             self.rect.x = WIDTH
             self.rect.y =  HEIGHT // 2 - space // 2 - self.rect.height
+            move_walls()
+
+def move_walls():
+    delta = random.choice([-60, -30, 30, 60])
+    wall_down.rect.y += delta
+    wall_up.rect.y += delta
 
 bat = Bat(bat_images)
 bat_group = pygame.sprite.GroupSingle(bat)
