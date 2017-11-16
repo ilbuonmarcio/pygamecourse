@@ -15,7 +15,7 @@ clock = pygame.time.Clock()
 # Game Values
 
 background_color = (150, 150, 150) # RGB value
-space = 120
+space = 240
 
 # https://opengameart.org/content/2d-monster-bat-enemy <-- CC-BY 3.0
 bat_images = [
@@ -67,6 +67,9 @@ class Bat(pygame.sprite.Sprite):
         self.y_speed += self.y_gravity * deltatime
         self.rect.y  += self.y_speed
 
+        if self.rect.y < 0:
+            self.rect.y = 0
+
         self.animate(deltatime)
 
         self.is_dead()
@@ -75,8 +78,11 @@ class Bat(pygame.sprite.Sprite):
         self.y_speed = -0.75
 
     def is_dead(self):
+        # return
         global game_ended
         if len(pygame.sprite.spritecollide(self, wall_group, False)) > 0:
+            game_ended = True
+        if self.rect.y > HEIGHT:
             game_ended = True
 
     def animate(self, deltatime):
@@ -119,21 +125,24 @@ class WallUp(Wall):
         Wall.move(self)
         if self.rect.x < -self.rect.width:
             self.rect.x = WIDTH
-            self.rect.y = HEIGHT // 2 + space // 2 - bat.rect.height - space - self.rect.height
-
+            self.rect.y =  HEIGHT // 2 - space // 2 - self.rect.height
 
 bat = Bat(bat_images)
 bat_group = pygame.sprite.GroupSingle(bat)
 
-walls = [
-    [
-        WallDown(wall_down_image, WIDTH, y),
-        WallUp(wall_up_image, WIDTH, y - bat.rect.height - space - wall_up_image.get_rect().height)
-    ] for y in [HEIGHT // 2 + space // 2]
-]
+wall_down = WallDown(
+    wall_down_image,
+    WIDTH,
+    HEIGHT // 2 + space // 2
+)
 
-walls = sum(walls, [])
-wall_group = pygame.sprite.Group(*walls)
+wall_up = WallUp(
+    wall_up_image,
+    WIDTH,
+    HEIGHT // 2 - space // 2 - wall_up_image.get_rect().height
+)
+
+wall_group = pygame.sprite.Group(wall_down, wall_up)
 
 # End of Game Values
 
