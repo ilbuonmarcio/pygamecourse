@@ -78,7 +78,7 @@ class Bat(pygame.sprite.Sprite):
         self.y_speed = -0.75
 
     def is_dead(self):
-        return
+        # return
         global game_ended
         if len(pygame.sprite.spritecollide(self, wall_group, False)) > 0:
             game_ended = True
