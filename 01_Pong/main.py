@@ -70,6 +70,17 @@ player1_image = pygame.image.load('./images/player_sprite.png')
 player2_image = pygame.image.load('./images/enemy_sprite.png')
 ball_image = pygame.image.load('./images/ball_sprite.png')
 
+background_image = pygame.image.load('./images/background.png')
+background_image = pygame.transform.scale(
+    background_image, (WIDTH, HEIGHT)
+)
+
+vignette_image = pygame.image.load('./images/vignette.png')
+vignette_image = pygame.transform.scale(
+    vignette_image,
+    (WIDTH, HEIGHT)
+)
+
 
 player1 = Player(player1_image, 'left')
 player2 = Player(player2_image, 'right')
@@ -80,7 +91,7 @@ ball_group = pygame.sprite.Group(ball)
 # ball_group = pygame.sprite.Group([Ball(ball_image) for i in range(0, 1)])
 
 
-background_color = (200, 200, 200)
+# background_color = (0, 0, 0)
 
 # End of Game Values
 
@@ -158,7 +169,10 @@ while not game_ended:
                                             font_color)
 
     # Window reset
-    pygame.Surface.fill(window, background_color)
+    # pygame.Surface.fill(window, background_color)
+    pygame.Surface.blit(window, background_image, (0, 0))
+
+    pygame.Surface.blit(window, vignette_image, (0, 0))
 
     # Game elements drawing
     player_group.draw(window)

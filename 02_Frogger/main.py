@@ -30,6 +30,12 @@ player_images = {
 
 enemy_image = pygame.image.load('./images/enemy_sprite.png')
 
+vignette_image = pygame.image.load('./images/vignette.png')
+vignette_image = pygame.transform.scale(
+    vignette_image,
+    (WIDTH, HEIGHT)
+)
+
 class Player(pygame.sprite.Sprite):
 
     def __init__(self, images):
@@ -155,6 +161,8 @@ while not game_ended:
     # Enemy Drawing
     enemy_group.draw(window)
 
+    pygame.Surface.blit(window, vignette_image, (0, 0))
+    
     # Win/Lose Label Drawing
     if win == True:
         win_label_group.draw(window)
