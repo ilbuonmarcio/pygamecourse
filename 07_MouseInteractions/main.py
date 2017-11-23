@@ -66,7 +66,7 @@ class Touchable(pygame.sprite.Sprite):
 
 
 touchable_objects = [
-    Touchable(random.choice(touchable_images)) for i in range(0, 400)
+    Touchable(random.choice(touchable_images)) for i in range(0, 6)
 ]
 
 touchable_group = pygame.sprite.Group(*touchable_objects)
