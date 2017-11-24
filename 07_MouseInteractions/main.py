@@ -5,7 +5,7 @@ import random
 pygame.init()
 
 GAME_RES = WIDTH, HEIGHT = 800, 600
-FPS = 60
+FPS = 200
 GAME_TITLE = 'MouseInteractions - MarconiGames'
 
 window = pygame.display.set_mode(GAME_RES, HWACCEL|HWSURFACE|DOUBLEBUF)
@@ -73,7 +73,7 @@ class Touchable(pygame.sprite.Sprite):
 
 
 touchable_objects = [
-    Touchable(random.choice(touchable_images)) for i in range(0, 60)
+    Touchable(random.choice(touchable_images)) for i in range(0, 32)
 ]
 
 touchable_group = pygame.sprite.Group(*touchable_objects)
