@@ -20,8 +20,11 @@ background_image = pygame.image.load('./images/background.png')
 
 touchable_images = [
     pygame.image.load('./images/blue.png'),
+    pygame.image.load('./images/blue_eyes_closed.png'),
     pygame.image.load('./images/red.png'),
-    pygame.image.load('./images/human.png')
+    pygame.image.load('./images/red_eye_closed.png'),
+    pygame.image.load('./images/human.png'),
+    pygame.image.load('./images/human_eyes_closed.png')
 ]
 
 for i in range(0, len(touchable_images)):
