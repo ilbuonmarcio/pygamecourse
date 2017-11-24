@@ -51,16 +51,19 @@ class Touchable(pygame.sprite.Sprite):
             else:
                 self.rect.y  += self.y_speed * deltatime
                 self.y_speed += self.y_gravity * deltatime
-                self.rect.y  += self.y_speed
+                self.rect.x += self.x_speed * deltatime
+                self.x_speed += self.x_gravity * deltatime
         else:
             self.dragged = False
             self.rect.y  += self.y_speed * deltatime
             self.y_speed += self.y_gravity * deltatime
-            self.rect.y  += self.y_speed
+            self.rect.x += self.x_speed * deltatime
+            self.x_speed += self.x_gravity * deltatime
 
         if self.rect.y + self.rect.height > HEIGHT - 25:
             self.rect.y = HEIGHT - self.rect.height - 25
             self.y_speed = random.uniform(-0.9, -0.5)
+            self.x_speed = random.uniform(-0.1, 0.2)
 
         if self.rect.x + self.rect.width > WIDTH - 25:
             self.rect.x = WIDTH - self.rect.width - 25
