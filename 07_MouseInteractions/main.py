@@ -14,6 +14,10 @@ clock = pygame.time.Clock()
 
 # Game Values
 
+# Edited from https://opengameart.org/content/sky-background
+background_image = pygame.image.load('./images/background.png')
+# Edited from https://opengameart.org/content/sky-background
+
 touchable_images = [
     pygame.image.load('./images/blue.png'),
     pygame.image.load('./images/red.png'),
@@ -29,8 +33,8 @@ class Touchable(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = image
         self.rect = self.image.get_rect()
-        self.rect.x = random.randint(0, WIDTH - self.rect.width)
-        self.rect.y = random.randint(0, HEIGHT - self.rect.height)
+        self.rect.x = random.randint(25, WIDTH - self.rect.width - 25)
+        self.rect.y = random.randint(150, HEIGHT - self.rect.height - 25)
         self.x_gravity = 0
         self.y_gravity = 0.003
         self.x_speed = 0
@@ -54,19 +58,22 @@ class Touchable(pygame.sprite.Sprite):
             self.y_speed += self.y_gravity * deltatime
             self.rect.y  += self.y_speed
 
-        if self.rect.y + self.rect.height > HEIGHT:
-            self.rect.y = HEIGHT - self.rect.height
+        if self.rect.y + self.rect.height > HEIGHT - 25:
+            self.rect.y = HEIGHT - self.rect.height - 25
             self.y_speed = random.uniform(-0.9, -0.5)
 
-        if self.rect.x < 0:
-            self.rect.x = 0
+        if self.rect.x + self.rect.width > WIDTH - 25:
+            self.rect.x = WIDTH - self.rect.width - 25
 
-        if self.rect.x + self.rect.width > WIDTH:
-            self.rect.x = WIDTH - self.rect.width
+        if self.rect.y < 25:
+            self.rect.y = 25
+
+        if self.rect.x < 25:
+            self.rect.x = 25
 
 
 touchable_objects = [
-    Touchable(random.choice(touchable_images)) for i in range(0, 6)
+    Touchable(random.choice(touchable_images)) for i in range(0, 60)
 ]
 
 touchable_group = pygame.sprite.Group(*touchable_objects)
@@ -106,7 +113,8 @@ while not game_ended:
         touchable.move(deltatime, curr_mouse_pos, dragging)
 
     # Display update
-    pygame.Surface.fill(window, background_color)
+    # pygame.Surface.fill(window, background_color)
+    pygame.Surface.blit(window, background_image, (0, 0))
 
     touchable_group.draw(window)
 
