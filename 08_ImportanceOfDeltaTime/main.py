@@ -64,7 +64,10 @@ def input_handler():
     while True:
         FPS = int(input("Inserisci nuovo valore di FPS: "))
 
-ball_list = [BallNotDeltaTimed(ball_image, WIDTH // 2, 150), BallDeltaTimed(ball_image, WIDTH // 2, 350)]
+ball_list = [
+    BallNotDeltaTimed(ball_image, WIDTH // 2, 150),
+    BallDeltaTimed(ball_image, WIDTH // 2, 350)
+]
 ball_group = pygame.sprite.Group(*ball_list)
 
 t = threading.Thread(target=input_handler)
