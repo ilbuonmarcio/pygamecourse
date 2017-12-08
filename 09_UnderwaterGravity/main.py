@@ -36,24 +36,24 @@ class Player(pygame.sprite.Sprite):
         self.y_gravity = 0.001
         self.x_speed = 0
         self.y_speed = -0.03
-        self.x_speedmin = -0.3
-        self.y_speedmin = -0.25
-        self.x_speedmax = 0.3
-        self.y_speedmax = 0.25
+        self.x_speedmin = -0.1
+        self.y_speedmin = -0.15
+        self.x_speedmax = 0.2
+        self.y_speedmax = 0.15
 
     def move(self, deltatime, direction="standing"):
-        if direction == "up" and self.rect.y > 25:
-            self.y_speed -= 0.035
-        elif direction == "left" and self.rect.x > 25:
-            self.x_speed -= 0.015
-        elif direction == "right" and self.rect.x + self.rect.width < WIDTH - 25:
-            self.x_speed += 0.015
-        elif direction == "standing":
-            self.x_speed *= 0.997
 
         self.x_speed += self.x_gravity * deltatime
         self.y_speed += self.y_gravity * deltatime
 
+        if direction == "up" and self.rect.y > 25:
+            self.y_speed -= 0.035
+        if direction == "left":
+            self.x_speed -= 0.015
+        if direction == "right":
+            self.x_speed += 0.015
+        if direction == "standing":
+            self.x_speed *= 0.994
 
         if self.x_speed > self.x_speedmax:
             self.x_speed = self.x_speedmax
@@ -64,9 +64,8 @@ class Player(pygame.sprite.Sprite):
         if self.y_speed < self.y_speedmin:
             self.y_speed = self.y_speedmin
 
-        self.rect.y  += self.y_speed * deltatime
+        self.rect.y += self.y_speed * deltatime
         self.rect.x += self.x_speed * deltatime
-
 
         if self.rect.y + self.rect.height > HEIGHT - 25:
             self.rect.y = HEIGHT - self.rect.height - 25
