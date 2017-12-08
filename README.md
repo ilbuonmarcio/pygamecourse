@@ -6,36 +6,29 @@ This course is centered in *teaching how to develop amateur games* in a *learnin
 by doing environment* with high-level and easy to use tools and libraries like
 *Python* and *PyGame* in particular.
 
-### Lesson 01: Pong
-- *How games works*
-- Main PyGame *features and commands*
-- *Structure* of game code
-- Simple demostration about *what can be done* with such simple tools in the right hands!
+### Game 01: Pong
+![Pong](./screenshots/Pong.png)
 
-![Pong](./screenshots/01_Pong.png)
+### Game 02: Frogger
+![Frogger](./screenshots/Frogger.png)
 
-### Lesson 02: Frogger
-- *Adding enemies* to our game
-- Start developing some real-world game apps
-- *Have fun coding and debugging for the first time*!
+### Game 03-06: Snake-SnakeWithJoystick
+![Snake/SnakeWithJoystick](./screenshots/Snake.png)
 
-![Frogger](./screenshots/02_Frogger.png)
+### Game 04: FlappyBird
+![FlappyBird](./screenshots/FlappyBird.png)
 
-### Lesson 03: Snake
-- *Recreate and reuse ideas* about classics of videogames
-- Use of *variables and functions*
+### Game 05: SpaceShooter
+![SpaceShooter](./screenshots/SpaceShooter.png)
 
-![Snake](./screenshots/03_Snake.png)
+### Game 07: MouseInteractions
+![MouseInteractions](./screenshots/MouseInteractions.png)
 
-### Lesson 04: FlappyBird
-- Handling *movement* and being *frame-indepented*
-- *Mouse interaction* and *action-time based events*
+### Game 08: ImportanceOfDeltaTime
+![ImportanceOfDeltaTime](./screenshots/ImportanceOfDeltaTime.png)
 
-### Lesson 05: SpaceShooter
-- Adding *randomness* to our games
-- Adding 'AI' to our game
-- Changing *level of difficulty* through *settings.txt files*
-- More time to do your stuff today!
+### Game 09: UnderwaterGravity
+![UnderwaterGravity](./screenshots/UnderwaterGravity.png)
 
 ## Affiliated links
 
