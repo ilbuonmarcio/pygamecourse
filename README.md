@@ -30,6 +30,9 @@ by doing environment* with high-level and easy to use tools and libraries like
 ### Game 09: UnderwaterGravity
 ![UnderwaterGravity](./screenshots/UnderwaterGravity.png)
 
+### Game 09: GameOfliFe
+![GameOfliFe](./screenshots/GameOfliFe.png)
+
 ## Affiliated links
 
 Join the official PyGame [Telegram Group](https://t.me/joinchat/Bz5eoxA0Eg_7tlOkW9qHZg) if you need some help after school!
