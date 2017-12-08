@@ -30,8 +30,8 @@ by doing environment* with high-level and easy to use tools and libraries like
 ### Game 09: UnderwaterGravity
 ![UnderwaterGravity](./screenshots/UnderwaterGravity.png)
 
-### Game 09: GameOfliFe
-![GameOfliFe](./screenshots/GameOfliFe.png)
+### Game 09: GameOfLife
+![GameOfLife](./screenshots/GameOfLife.png)
 
 ## Affiliated links
 
