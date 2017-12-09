@@ -54,11 +54,11 @@ player_jumping_right_images = [
 player_jumping_left_images = [
     flipimg(player_jumping_right_images[0], True, False),
     flipimg(player_jumping_right_images[1], True, False),
-    flipimg(player_jumping_right_images[0], True, False),
-    flipimg(player_jumping_right_images[1], True, False),
-    flipimg(player_jumping_right_images[0], True, False),
-    flipimg(player_jumping_right_images[1], True, False),
-    flipimg(player_jumping_right_images[0], True, False)
+    flipimg(player_jumping_right_images[2], True, False),
+    flipimg(player_jumping_right_images[3], True, False),
+    flipimg(player_jumping_right_images[4], True, False),
+    flipimg(player_jumping_right_images[5], True, False),
+    flipimg(player_jumping_right_images[6], True, False)
 ]
 
 player_images = {
