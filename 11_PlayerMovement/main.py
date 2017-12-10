@@ -20,16 +20,29 @@ def scaleimg(image, scale):
 def flipimg(image, xbool, ybool):
     return pygame.transform.flip(image, xbool, ybool)
 
-# Edited from https://opengameart.org/content/sky-background
+# Edited from https://opengameart.org/content/dark-night-full-moon-background
 background_image = pygame.image.load('./images/background.png')
 background_image = pygame.transform.scale(
     background_image,
     (WIDTH, HEIGHT)
 )
-# Edited from https://opengameart.org/content/sky-background
+# Edited from https://opengameart.org/content/dark-night-full-moon-background
 
 parachute_image = scaleimg(pygame.image.load('./images/player/parachute.png'), (64, 64))
 
+# Edited from https://opengameart.org/content/high-res-fire-ball
+projectile_left_images = [
+    scaleimg(pygame.image.load('./images/red.png'), (72, 32)),
+    scaleimg(pygame.image.load('./images/pink.png'), (72, 32)),
+    scaleimg(pygame.image.load('./images/blue.png'), (72, 32))
+]
+
+projectile_right_images = [
+    flipimg(projectile_left_images[0], True, False),
+    flipimg(projectile_left_images[1], True, False),
+    flipimg(projectile_left_images[2], True, False)
+]
+# Edited from https://opengameart.org/content/high-res-fire-ball
 
 player_right_images = [
     scaleimg(pygame.image.load('./images/player/standing0.png'), (64, 64)),
@@ -86,6 +99,28 @@ class Parachute(pygame.sprite.Sprite):
         else:
             self.image = self.blank_image
 
+class Projectile(pygame.sprite.Sprite):
+
+    def __init__(self, image, x, y, direction):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.direction = direction
+        self.x_speed = 1
+        self.y_speed = random.choice(
+            [n * 0.03 for n in range(-10, 10, 1)]
+        )
+
+    def move(self, deltatime):
+        self.rect.x += self.x_speed * deltatime * self.direction
+        self.rect.y += self.y_speed * deltatime
+
+        if self.rect.x > WIDTH or self.rect.x < -self.rect.width \
+           or self.rect.y > HEIGHT or self.rect.y < -self.rect.height:
+           projectile_group.remove(self)
+
 class Player(pygame.sprite.Sprite):
 
     def __init__(self, images, parachute):
@@ -110,6 +145,8 @@ class Player(pygame.sprite.Sprite):
         self.curr_animation_time = 0
         self.animation_index = 0
         self.parachute = parachute
+        self.cast_time = 20
+        self.curr_cast_time = 0
 
     def move(self, deltatime, actions=[]):
 
@@ -202,12 +239,35 @@ class Player(pygame.sprite.Sprite):
 
         self.image = self.images[self.state][self.animation_index % len(self.images[self.state])]
 
+    def cast(self, deltatime, direction):
+        if self.curr_cast_time >= self.cast_time:
+            self.curr_cast_time = 0
+            if direction == 1:
+                projectile_group.add(Projectile(
+                    random.choice(projectile_right_images),
+                    self.rect.x + self.rect.width - 8,
+                    self.rect.y,
+                    direction
+                ))
+            elif direction == -1:
+                projectile_group.add(Projectile(
+                    random.choice(projectile_left_images),
+                    self.rect.x - projectile_left_images[0].get_rect().width,
+                    self.rect.y,
+                    direction
+                ))
+        else:
+            self.curr_cast_time += deltatime
+
 
 parachute = Parachute()
-player = Player(player_images, parachute)
-
-player_group = pygame.sprite.GroupSingle(player)
 parachute_group = pygame.sprite.GroupSingle(parachute)
+
+projectile_group = pygame.sprite.Group()
+
+player = Player(player_images, parachute)
+player_group = pygame.sprite.GroupSingle(player)
+
 
 background_color = (255, 255, 255) # RGB value
 
@@ -238,15 +298,20 @@ while not game_ended:
         actions.append("left")
     if keys_pressed[K_d]:
         actions.append("right")
-
-    # print(actions)
+    if keys_pressed[K_m]:
+        direction = 1 if "right" in player.state else -1
+        player.cast(deltatime, direction)
 
     player.move(deltatime, actions)
+
+    for p in projectile_group:
+        p.move(deltatime)
 
     # Display update
     # pygame.Surface.fill(window, background_color)
     pygame.Surface.blit(window, background_image, (0, 0))
 
+    projectile_group.draw(window)
     parachute_group.draw(window)
     player_group.draw(window)
 
