@@ -110,7 +110,7 @@ class Projectile(pygame.sprite.Sprite):
         self.direction = direction
         self.x_speed = 1
         self.y_speed = random.choice(
-            [n * 0.03 for n in range(-10, 10, 1)]
+            [n * 0.035 for n in range(-10, 10, 1)]
         )
 
     def move(self, deltatime):
