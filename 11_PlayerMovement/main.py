@@ -28,13 +28,15 @@ background_image = pygame.transform.scale(
 )
 # Edited from https://opengameart.org/content/dark-night-full-moon-background
 
-parachute_image = scaleimg(pygame.image.load('./images/player/parachute.png'), (64, 64))
+player_size = 32
+
+parachute_image = scaleimg(pygame.image.load('./images/player/parachute.png'), (player_size, player_size))
 
 # Edited from https://opengameart.org/content/high-res-fire-ball
 projectile_left_images = [
-    scaleimg(pygame.image.load('./images/red.png'), (72, 32)),
-    scaleimg(pygame.image.load('./images/pink.png'), (72, 32)),
-    scaleimg(pygame.image.load('./images/blue.png'), (72, 32))
+    scaleimg(pygame.image.load('./images/red.png'), (int(player_size * 1.5), player_size // 2)),
+    scaleimg(pygame.image.load('./images/pink.png'), (int(player_size * 1.5), player_size // 2)),
+    scaleimg(pygame.image.load('./images/blue.png'), (int(player_size * 1.5), player_size // 2))
 ]
 
 projectile_right_images = [
@@ -45,8 +47,8 @@ projectile_right_images = [
 # Edited from https://opengameart.org/content/high-res-fire-ball
 
 player_right_images = [
-    scaleimg(pygame.image.load('./images/player/standing0.png'), (64, 64)),
-    scaleimg(pygame.image.load('./images/player/standing1.png'), (64, 64))
+    scaleimg(pygame.image.load('./images/player/standing0.png'), (player_size, player_size)),
+    scaleimg(pygame.image.load('./images/player/standing1.png'), (player_size, player_size))
 ]
 
 player_left_images = [
@@ -55,13 +57,13 @@ player_left_images = [
 ]
 
 player_jumping_right_images = [
-    scaleimg(pygame.image.load('./images/player/jump0.png'), (64, 64)),
-    scaleimg(pygame.image.load('./images/player/jump1.png'), (64, 64)),
-    scaleimg(pygame.image.load('./images/player/jump2.png'), (64, 64)),
-    scaleimg(pygame.image.load('./images/player/jump3.png'), (64, 64)),
-    scaleimg(pygame.image.load('./images/player/jump4.png'), (64, 64)),
-    scaleimg(pygame.image.load('./images/player/jump5.png'), (64, 64)),
-    scaleimg(pygame.image.load('./images/player/jump6.png'), (64, 64))
+    scaleimg(pygame.image.load('./images/player/jump0.png'), (player_size, player_size)),
+    scaleimg(pygame.image.load('./images/player/jump1.png'), (player_size, player_size)),
+    scaleimg(pygame.image.load('./images/player/jump2.png'), (player_size, player_size)),
+    scaleimg(pygame.image.load('./images/player/jump3.png'), (player_size, player_size)),
+    scaleimg(pygame.image.load('./images/player/jump4.png'), (player_size, player_size)),
+    scaleimg(pygame.image.load('./images/player/jump5.png'), (player_size, player_size)),
+    scaleimg(pygame.image.load('./images/player/jump6.png'), (player_size, player_size))
 ]
 
 player_jumping_left_images = [
@@ -85,15 +87,15 @@ class Parachute(pygame.sprite.Sprite):
 
     def __init__(self, image=parachute_image):
         pygame.sprite.Sprite.__init__(self)
-        self.image_reference = image
-        self.blank_image = pygame.Surface((64, 64))
-        self.blank_image.set_alpha(0)
-        self.image = self.blank_image
+        self.image = image
         self.rect = self.image.get_rect()
+        self.image_reference = image
+        self.blank_image = pygame.Surface((self.rect.width, self.rect.height))
+        self.blank_image.set_alpha(0)
 
-    def toggle(self, value, x, y):
+    def toggle(self, value, attachedwidth, x, y):
         self.rect.x = x
-        self.rect.y = y - 32
+        self.rect.y = y - (attachedwidth // 2)
         if value:
             self.image = self.image_reference
         else:
@@ -108,9 +110,9 @@ class Projectile(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         self.direction = direction
-        self.x_speed = 1
+        self.x_speed = self.rect.width * 0.02
         self.y_speed = random.choice(
-            [n * 0.035 for n in range(-10, 10, 1)]
+            [n * self.x_speed * 0.03 for n in range(-30, 30, 1)]
         )
 
     def move(self, deltatime):
@@ -156,31 +158,31 @@ class Player(pygame.sprite.Sprite):
             self.x_speed -= 0.03
             self.y_speed -= 0.075
             self.state = "jumping_left"
-            self.parachute.toggle(True, self.rect.x, self.rect.y)
+            self.parachute.toggle(True, self.rect.width, self.rect.x, self.rect.y)
         elif "right" in actions and "jump" in actions:
             self.x_speed += 0.03
             self.y_speed -= 0.075
             self.state = "jumping_right"
-            self.parachute.toggle(True, self.rect.x, self.rect.y)
+            self.parachute.toggle(True, self.rect.width, self.rect.x, self.rect.y)
         elif "jump" in actions:
             self.y_speed -= 0.075
             if self.previous_state == "right":
                 self.state = "jumping_right"
             if self.previous_state == "left":
                 self.state = "jumping_left"
-            self.parachute.toggle(True, self.rect.x, self.rect.y)
+            self.parachute.toggle(True, self.rect.width, self.rect.x, self.rect.y)
         elif "left" in actions:
             self.x_speed -= 0.03
             self.state = "left"
-            self.parachute.toggle(False, self.rect.x, self.rect.y)
+            self.parachute.toggle(False, self.rect.width, self.rect.x, self.rect.y)
         elif "right" in actions:
             self.x_speed += 0.03
             self.state = "right"
-            self.parachute.toggle(False, self.rect.x, self.rect.y)
+            self.parachute.toggle(False, self.rect.width, self.rect.x, self.rect.y)
         elif len(actions) == 0:
             self.state = self.previous_state
             self.x_speed *= 0.93
-            self.parachute.toggle(False, self.rect.x, self.rect.y)
+            self.parachute.toggle(False, self.rect.width, self.rect.x, self.rect.y)
 
         if self.x_speed < self.x_speedmin:
             self.x_speed = self.x_speedmin
