@@ -7,7 +7,7 @@ pygame.init()
 
 GAME_RES = WIDTH, HEIGHT = pygame.display.Info().current_w, pygame.display.Info().current_h
 FPS = 200
-GAME_TITLE = 'Default Game Title'
+GAME_TITLE = 'Cellular Simulation - MarconiGames'
 
 window = pygame.display.set_mode(GAME_RES, FULLSCREEN|HWACCEL|HWSURFACE|DOUBLEBUF)
 pygame.display.set_caption(GAME_TITLE)
@@ -46,7 +46,12 @@ class Cell:
             self.y = HEIGHT
 
     def collide(self, other):
-        if self.x == other.x and self.y == other.y and self.ID != other.ID:
+        if      self.x >= other.x - (other.dimension // 2) \
+            and self.x <= other.x + (other.dimension // 2) \
+            and self.y >= other.y - (other.dimension // 2) \
+            and self.y <= other.y + (other.dimension // 2) \
+            and self.ID != other.ID:
+
             global ID_index
             new_cell = Cell(
                 ID_index,
@@ -71,6 +76,28 @@ class Cell:
 
 def recreate_table():
     global num_of_cells, cells
+    """cells = [
+        Cell(
+            0,
+            16,
+            (255, 255, 255),
+            50 - 16,
+            50,
+            1,
+            0
+        ),
+        Cell(
+            1,
+            16,
+            (25, 25, 25),
+            WIDTH - 16,
+            50,
+            -1,
+            0
+        )
+    ]
+    return"""
+
     cells = [
         Cell(
             ID,
@@ -83,7 +110,7 @@ def recreate_table():
         ) for ID in range(0, num_of_cells)
     ]
 
-num_of_cells = 128
+num_of_cells = 512
 recreate_table()
 
 ID_index = num_of_cells
@@ -126,6 +153,8 @@ while not game_ended:
 
     pygame.display.update()
     clock.tick(FPS)
+
+    print(len(cells))
 
 pygame.quit()
 exit(0)
